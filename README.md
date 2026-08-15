@@ -17,27 +17,41 @@ You do not need to write any code. There are three things worth doing, in order.
 
 ### 1. See the app on your own phone or computer
 
-Everything is already built. To look at it you need to run it once on a computer.
+**The quickest way is to skip this and do step 2** — then you just open a web link on your
+phone, with no Terminal at all. Do this step only if you want it running on your own machine.
 
-1. Install **Node.js** from <https://nodejs.org> — pick the big green "LTS" button and click through
-   the installer. You only ever do this once.
-2. Open **Terminal** (Mac: press ⌘ + Space, type `Terminal`, press Enter) or
+You need **Node.js** first. Install it from <https://nodejs.org> — click the big green "LTS"
+button and click through the installer. You only ever do this once.
+
+Then download this code and run it:
+
+1. On this repository's GitHub page, click the green **Code** button, then **Download ZIP**.
+2. Open the downloaded file so it unzips. It lands in your **Downloads** folder.
+3. Open **Terminal** (Mac: press ⌘ + Space, type `Terminal`, press Enter) or
    **Command Prompt** (Windows: press the Windows key, type `cmd`, press Enter).
-3. Type these three lines, pressing Enter after each. Wait for each one to finish before the next.
+4. Type this line, but **do not press Enter yet**:
 
    ```
-   cd path/to/GANZA/app
+   cd
+   ```
+
+   Type a space after `cd`, then **drag the unzipped `app` folder from Downloads onto the
+   Terminal window**. Terminal fills in the address for you. Now press Enter.
+
+5. Now type these two lines, pressing Enter after each and waiting for it to finish:
+
+   ```
    npm install
    npm run dev
    ```
 
-   Replace `path/to/GANZA` with wherever you downloaded this folder. (Tip: type `cd ` with a space,
-   then drag the `app` folder onto the Terminal window — it fills in the path for you.)
-
-4. The last line prints a web address like `http://localhost:5173/`. Open it in your browser.
-5. Sign in with **any phone number** and **any four digits**. There is no real account yet.
+6. The last line prints a web address like `http://localhost:5173/`. Open it in your browser.
+7. Sign in with **any phone number** and **any four digits**. There is no real account yet.
 
 To stop it, click the Terminal window and press `Ctrl + C`.
+
+If Terminal says `no such file or directory`, the address is wrong — go back to step 4 and drag
+the folder in rather than typing it.
 
 ### 2. Put it online so other people can open it
 
