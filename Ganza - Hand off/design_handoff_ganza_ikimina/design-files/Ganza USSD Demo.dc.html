@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F7F6FB;--card:#FFFFFF;--ink:#232232;--sub:#6E6C7E;--line:rgba(35,34,50,.14);--chip:#EDECF4;--pri:#5A55D6;--priink:#F7F6FE;--pribg:#EDECFB;--acc:#D69A2D;--ok:#3F6B2E;--okbg:#E7EFDF;--red:#B3261E}
+body{margin:0;background:#F7F6FB;font-family:'Figtree',system-ui,sans-serif;color:#232232;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#5A55D6}a:hover{color:#403BB0}
+@keyframes caret{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes dlgIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes smsIn{0%{opacity:0;transform:translate(-50%,-14px)}7%{opacity:1;transform:translate(-50%,0)}88%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-10px)}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:var(--bg)">
+
+  <sc-if value="{{ intro }}" hint-placeholder-val="{{ true }}">
+    <div style="position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:32px;overflow:hidden">
+      <svg width="900" height="120" viewBox="0 0 900 120" style="position:absolute;left:-60px;bottom:70px;opacity:.13" aria-hidden="true"><path d="M15 95 L95 20 L175 95 L255 20 L335 95 L415 20 L495 95 L575 20 L655 95 L735 20 L815 95 L880 40" fill="none" stroke="var(--acc)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      <div style="max-width:720px;width:100%;position:relative">
+        <div style="display:flex;align-items:center;gap:16px">
+          <svg width="46" height="50" viewBox="60 40 440 480" aria-hidden="true"><path d="M 280 69 L 420 279 L 140 279 Z" fill="var(--ink)"></path><path d="M 128 303 L 432 303 L 376 491 L 184 491 Z" fill="var(--ink)"></path><path d="M 172 401 L 208 365 L 244 401 L 280 365 L 316 401 L 352 365 L 388 401" fill="none" stroke="var(--acc)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          <span style="font-family:'Archivo',sans-serif;font-size:38px;font-weight:700;letter-spacing:-.03em">Ganza</span>
+        </div>
+        <h1 style="font-size:52px;font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:28px 0 0;max-width:14ch">The ikimina notebook, dialled.</h1>
+        <p style="font-size:20px;color:var(--sub);font-weight:400;line-height:1.5;margin:18px 0 0;max-width:44ch">No data. No smartphone. No paper. Try the real menus below — nothing here needs a network.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin:30px 0 0">
+          <sc-for list="{{ introChips }}" as="c" hint-placeholder-count="3">
+            <span style="background:var(--card);border-radius:999px;padding:12px 18px;font-size:15px;font-weight:500;color:var(--ink);display:flex;align-items:center;gap:9px"><span style="width:8px;height:8px;border-radius:50%;background:{{ c.c }}"></span>{{ c.k }}</span>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:36px">
+          <button type="button" onClick="{{ startDemo }}" style="font-size:17px;font-weight:600;background:var(--pri);color:var(--priink);border:none;border-radius:999px;padding:19px 34px;cursor:pointer" style-hover="background:#4B47C0">Open the phone</button>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:500;color:var(--pri);letter-spacing:.04em">{{ dialled }}</span>
+        </div>
+        <p style="font-size:14px;color:var(--sub);font-weight:400;margin:20px 0 0">Keypad or keyboard. Enter sends.</p>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="max-width:1280px;margin:0 auto;padding:26px 26px 70px">
+
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:30px">
+      <div style="display:flex;align-items:center;gap:13px">
+        <svg width="30" height="33" viewBox="60 40 440 480" aria-hidden="true"><path d="M 280 69 L 420 279 L 140 279 Z" fill="var(--ink)"></path><path d="M 128 303 L 432 303 L 376 491 L 184 491 Z" fill="var(--ink)"></path><path d="M 172 401 L 208 365 L 244 401 L 280 365 L 316 401 L 352 365 L 388 401" fill="none" stroke="var(--acc)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <span style="font-family:'Archivo',sans-serif;font-weight:700;font-size:22px;letter-spacing:-.02em">Ganza</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--sub);letter-spacing:.04em">{{ dialled }} · offline demo</span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <div style="display:flex;background:var(--chip);border-radius:999px;padding:4px">
+          <button type="button" onClick="{{ setEn }}" style="{{ segEn }}">EN</button>
+          <button type="button" onClick="{{ setRw }}" style="{{ segRw }}">RW</button>
+        </div>
+        <div style="display:flex;background:var(--chip);border-radius:999px;padding:4px">
+          <button type="button" onClick="{{ setFeature }}" style="{{ segFeature }}">Feature phone</button>
+          <button type="button" onClick="{{ setSmart }}" style="{{ segSmart }}">Smartphone</button>
+        </div>
+        <button type="button" onClick="{{ reset }}" style="font-size:15px;font-weight:500;padding:12px 20px;border:1.5px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);cursor:pointer" style-hover="border-color:var(--pri);color:var(--pri)">Reset</button>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;justify-content:center">
+
+      <div style="flex:0 0 300px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;font-weight:600;color:var(--sub);letter-spacing:.09em;text-transform:uppercase;margin-left:4px">Who is holding the phone</div>
+        <sc-for list="{{ personas }}" as="p" hint-placeholder-count="5">
+          <button type="button" onClick="{{ p.press }}" style="text-align:left;border:1.5px solid {{ p.bd }};background:{{ p.bg }};border-radius:16px;padding:16px 18px;cursor:pointer;display:flex;flex-direction:column;gap:3px" style-hover="border-color:var(--pri)">
+            <span style="display:flex;align-items:center;gap:9px">
+              <span style="font-size:16px;font-weight:600;color:{{ p.fg }}">{{ p.role }}</span>
+              <sc-if value="{{ p.on }}" hint-placeholder-val="{{ false }}"><span style="width:7px;height:7px;border-radius:50%;background:var(--acc)"></span></sc-if>
+            </span>
+            <span style="font-size:14px;color:var(--sub);font-weight:400">{{ p.name }}</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--sub)">{{ p.num }}</span>
+            <span style="font-size:13.5px;color:var(--sub);font-weight:400;line-height:1.4;margin-top:5px">{{ p.note }}</span>
+          </button>
+        </sc-for>
+        <div style="background:var(--card);border-radius:16px;padding:16px 18px;margin-top:4px">
+          <div style="font-size:13px;font-weight:600;color:var(--sub);letter-spacing:.09em;text-transform:uppercase">Try another SIM</div>
+          <div style="display:flex;gap:8px;margin-top:11px">
+            <input value="{{ simInput }}" onInput="{{ onSim }}" placeholder="0788 …" style="flex:1;min-width:0;height:44px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);padding:0 13px;font-family:'IBM Plex Mono',monospace;font-size:14px;outline:none" />
+            <button type="button" onClick="{{ applySim }}" style="flex:none;height:44px;border:none;border-radius:12px;background:var(--pri);color:var(--priink);font-size:15px;font-weight:600;padding:0 16px;cursor:pointer">Use</button>
+          </div>
+          <sc-if value="{{ simFeedback }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13.5px;color:var(--pri);font-weight:500;margin-top:10px;line-height:1.4">{{ simFeedback }}</div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:16px;position:relative">
+
+        <sc-if value="{{ sms }}" hint-placeholder-val="{{ false }}">
+          <div key="{{ sms.id }}" style="position:absolute;top:14px;left:50%;transform:translateX(-50%);width:330px;max-width:94vw;z-index:20;animation:smsIn 6s ease forwards">
+            <div style="background:var(--ink);color:var(--bg);border-radius:16px;padding:14px 16px;box-shadow:0 18px 40px rgba(35,34,50,.32)">
+              <div style="display:flex;justify-content:space-between;gap:10px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);font-weight:600;margin-bottom:7px">
+                <span>SMS · Ganza</span><span>{{ sms.time }}</span>
+              </div>
+              <div style="font-size:14px;line-height:1.5;font-weight:400">{{ sms.text }}</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isSmart }}" hint-placeholder-val="{{ false }}">
+          <div style="width:372px;max-width:96vw;background:#131318;border-radius:46px;padding:11px;box-shadow:0 40px 80px -30px rgba(35,34,50,.5)">
+            <div style="position:relative;border-radius:36px;overflow:hidden;background:#1B1B22;height:726px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:15px 26px 6px;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:12.5px">
+                <span>{{ clock }}</span>
+                <span style="display:flex;gap:7px;align-items:center;font-size:11px;letter-spacing:.06em">MTN · 4G <span style="display:inline-block;width:22px;height:10px;border:1px solid rgba(255,255,255,.7);border-radius:2px;position:relative"><span style="position:absolute;inset:1.5px;right:6px;background:#fff;border-radius:1px"></span></span></span>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 22px 26px">
+                <div style="text-align:center;padding:26px 0 10px">
+                  <div style="font-family:'IBM Plex Mono',monospace;color:#fff;font-size:34px;letter-spacing:.05em;font-weight:500">{{ dialled }}</div>
+                  <div style="font-size:13px;color:#9A99A6;font-weight:400;margin-top:10px">{{ simLabel }}</div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:auto">
+                  <sc-for list="{{ pad }}" as="k" hint-placeholder-count="12">
+                    <button type="button" onClick="{{ k.press }}" style="aspect-ratio:1;border-radius:50%;border:none;background:#2C2C36;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:24px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px" style-active="background:#3C3C4A">
+                      <span>{{ k.d }}</span>
+                      <span style="font-size:9px;letter-spacing:.12em;color:#9A99A6">{{ k.sub }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+                <div style="display:flex;justify-content:center;margin-top:18px">
+                  <button type="button" onClick="{{ call }}" style="width:66px;height:66px;border-radius:50%;border:none;background:#3F6B2E;cursor:pointer;display:flex;align-items:center;justify-content:center" style-active="background:#325723">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8c1.6 3.1 4.1 5.6 7.2 7.2l2.4-2.4c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V21c0 .6-.4 1-1 1C10.6 22 2 13.4 2 2.9c0-.6.4-1 1-1h4.1c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1L6.6 10.8z"></path></svg>
+                  </button>
+                </div>
+              </div>
+
+              <sc-if value="{{ sessionOn }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;background:rgba(12,12,16,.6);display:flex;align-items:center;justify-content:center;padding:18px">
+                  <div style="width:100%;background:var(--card);border-radius:20px;padding:22px 22px 16px;box-shadow:0 24px 50px rgba(0,0,0,.35);animation:dlgIn .22s ease both;max-height:88%;overflow:auto">
+                    <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--sub);padding:12px 0 18px">{{ loadingText }}<span style="animation:caret 1s steps(1) infinite">_</span></div>
+                    </sc-if>
+                    <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:14.5px;line-height:1.6;color:var(--ink)">
+                        <div style="font-weight:600;color:var(--pri);letter-spacing:.02em">{{ head }}</div>
+                        <sc-for list="{{ body }}" as="ln" hint-placeholder-count="3">
+                          <div style="color:var(--sub);margin-top:3px;white-space:pre-wrap">{{ ln.t }}</div>
+                        </sc-for>
+                        <div style="display:flex;flex-direction:column;gap:2px;margin-top:12px">
+                          <sc-for list="{{ options }}" as="o" hint-placeholder-count="4">
+                            <button type="button" onClick="{{ o.press }}" style="display:flex;gap:10px;text-align:left;background:transparent;border:none;padding:5px 6px 5px 0;font-family:'IBM Plex Mono',monospace;font-size:14.5px;color:var(--ink);cursor:pointer;border-radius:7px" style-hover="background:var(--pribg)">
+                              <span style="color:var(--pri);font-weight:600;min-width:22px">{{ o.k }}</span><span>{{ o.label }}</span>
+                            </button>
+                          </sc-for>
+                        </div>
+                        <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}">
+                          <div style="margin-top:10px;color:var(--red)">{{ err }}</div>
+                        </sc-if>
+                        <sc-if value="{{ foot }}" hint-placeholder-val="{{ false }}">
+                          <div style="margin-top:11px;color:var(--sub);font-size:13px">{{ foot }}</div>
+                        </sc-if>
+                        <sc-if value="{{ awaitsReply }}" hint-placeholder-val="{{ false }}">
+                          <div style="margin-top:16px;border-bottom:1.5px solid var(--pri);padding-bottom:6px;min-height:24px;font-size:16px;letter-spacing:.08em">{{ replyView }}<span style="animation:caret 1.05s steps(1) infinite;color:var(--pri)">|</span></div>
+                        </sc-if>
+                      </div>
+                      <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:16px">
+                        <button type="button" onClick="{{ cancel }}" style="font-size:14px;font-weight:500;background:transparent;border:none;color:var(--sub);padding:11px 14px;cursor:pointer;border-radius:10px" style-hover="color:var(--ink)">{{ cancelLabel }}</button>
+                        <sc-if value="{{ awaitsReply }}" hint-placeholder-val="{{ false }}">
+                          <button type="button" onClick="{{ sendReply }}" style="font-size:14px;font-weight:600;background:var(--pribg);border:none;color:var(--pri);padding:11px 16px;cursor:pointer;border-radius:10px">{{ sendLabel }}</button>
+                        </sc-if>
+                      </div>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isFeature }}" hint-placeholder-val="{{ true }}">
+          <div style="width:312px;max-width:96vw;background:linear-gradient(175deg,#4A4956 0%,#2B2A36 14%,#1E1D28 60%,#131219 100%);border-radius:38px 38px 32px 32px;padding:8px;box-shadow:0 46px 80px -34px rgba(35,34,50,.55),inset 0 1.5px 0 rgba(255,255,255,.22)">
+            <div style="background:linear-gradient(180deg,#22212C,#15141C);border-radius:31px 31px 26px 26px;padding:15px 13px 20px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)">
+              <div style="display:flex;justify-content:center;margin-bottom:13px"><div style="width:62px;height:7px;border-radius:4px;background:#0B0A10;box-shadow:inset 0 2px 3px rgba(0,0,0,.9)"></div></div>
+              <div style="background:linear-gradient(180deg,#C9C8D2 0%,#A5A4B2 45%,#8B8A98 100%);border-radius:8px;padding:10px 9px;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.6),0 2px 3px rgba(0,0,0,.5)">
+                <div style="background:#E8E7F2;border-radius:2px;height:216px;padding:8px 9px;display:flex;flex-direction:column;font-family:'IBM Plex Mono',monospace;color:#1A1926;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(35,34,50,.28)">
+                  <div style="display:flex;justify-content:space-between;align-items:center;font-size:8.5px;letter-spacing:.08em;margin-bottom:6px;color:#3A3950">
+                    <svg width="17" height="11" viewBox="0 0 17 11" fill="#1A1926"><rect x="0" y="8" width="2.6" height="3"></rect><rect x="3.6" y="6" width="2.6" height="5"></rect><rect x="7.2" y="4" width="2.6" height="7"></rect><rect x="10.8" y="2" width="2.6" height="9"></rect><rect x="14.4" y="0" width="2.6" height="11"></rect></svg>
+                    <span style="letter-spacing:.1em">MTN RW</span>
+                    <span style="display:flex;align-items:center;gap:4px">{{ clock }}<svg width="19" height="10" viewBox="0 0 19 10" fill="none"><rect x="0.6" y="0.6" width="15.5" height="8.8" stroke="#1A1926" stroke-width="1.2"></rect><rect x="2.4" y="2.4" width="11.9" height="5.2" fill="#1A1926"></rect><rect x="17" y="3" width="2" height="4" fill="#1A1926"></rect></svg></span>
+                  </div>
+                  <sc-if value="{{ sessionOn }}" hint-placeholder-val="{{ true }}">
+                    <div style="flex:1;border:1.5px solid #1A1926;padding:5px 6px;font-size:10px;line-height:1.42;overflow:auto">
+                      <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+                        <div>{{ loadingText }}<span style="animation:caret 1s steps(1) infinite">_</span></div>
+                      </sc-if>
+                      <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+                        <div style="font-weight:600">{{ head }}</div>
+                        <sc-for list="{{ body }}" as="ln" hint-placeholder-count="3">
+                          <div style="white-space:pre-wrap">{{ ln.t }}</div>
+                        </sc-for>
+                        <div style="display:flex;flex-direction:column;margin-top:5px">
+                          <sc-for list="{{ options }}" as="o" hint-placeholder-count="4">
+                            <button type="button" onClick="{{ o.press }}" style="display:flex;gap:6px;text-align:left;background:transparent;border:none;padding:1px 0;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#1A1926;cursor:pointer">
+                              <span style="font-weight:600">{{ o.k }}</span><span>{{ o.label }}</span>
+                            </button>
+                          </sc-for>
+                        </div>
+                        <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}">
+                          <div style="margin-top:4px;font-weight:600">{{ err }}</div>
+                        </sc-if>
+                        <sc-if value="{{ foot }}" hint-placeholder-val="{{ false }}">
+                          <div style="margin-top:5px;opacity:.72">{{ foot }}</div>
+                        </sc-if>
+                        <sc-if value="{{ awaitsReply }}" hint-placeholder-val="{{ false }}">
+                          <div style="margin-top:7px;border-top:1px dashed #1A1926;padding-top:4px;letter-spacing:.1em">{{ replyView }}<span style="animation:caret 1.05s steps(1) infinite">|</span></div>
+                        </sc-if>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ sessionOff }}" hint-placeholder-val="{{ false }}">
+                    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:9px">
+                      <div style="font-size:9px;letter-spacing:.16em;opacity:.65">GANZA</div>
+                      <div style="font-size:18px;letter-spacing:.08em">{{ dialled }}</div>
+                      <div style="font-size:8.5px;letter-spacing:.05em;opacity:.7">{{ simLabel }}</div>
+                    </div>
+                  </sc-if>
+                  <div style="display:flex;justify-content:space-between;align-items:flex-end;font-size:10px;margin-top:6px;font-weight:600">
+                    <span>{{ softLeft }}</span><span>{{ softRight }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:7px;margin-top:15px">
+                <button type="button" onClick="{{ softLeftPress }}" style="flex:1;height:36px;border:none;background:linear-gradient(180deg,#4C8A3A,#2F5B23);border-radius:19px 7px 9px 9px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.3),0 2px 4px rgba(0,0,0,.5)" style-active="background:linear-gradient(180deg,#3E7530,#26491C)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8c1.6 3.1 4.1 5.6 7.2 7.2l2.4-2.4c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V21c0 .6-.4 1-1 1C10.6 22 2 13.4 2 2.9c0-.6.4-1 1-1h4.1c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1L6.6 10.8z"></path></svg>
+                </button>
+                <button type="button" onClick="{{ okPress }}" style="flex:none;width:52px;height:36px;border:none;background:linear-gradient(180deg,#6B67E0,#4A46B8);border-radius:9px;cursor:pointer;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.28),0 2px 4px rgba(0,0,0,.5)" style-active="background:linear-gradient(180deg,#5B57CE,#3D39A6)">OK</button>
+                <button type="button" onClick="{{ softRightPress }}" style="flex:1;height:36px;border:none;background:linear-gradient(180deg,#B8453B,#7E2A22);border-radius:7px 19px 9px 9px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.28),0 2px 4px rgba(0,0,0,.5)" style-active="background:linear-gradient(180deg,#9E362D,#6A211A)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M12 9c-2 0-3.9.3-5.7.9v3.8c0 .5-.3.9-.7 1.1-1.1.6-2.2 1.3-3.1 2.1-.2.2-.5.3-.8.3-.3 0-.6-.1-.8-.3l-1.2-1.2c-.2-.2-.3-.5-.3-.8s.1-.6.3-.8C3.1 10.8 7.3 9 12 9s8.9 1.8 12.3 5.1c.2.2.3.5.3.8s-.1.6-.3.8l-1.2 1.2c-.2.2-.5.3-.8.3-.3 0-.6-.1-.8-.3-.9-.8-2-1.5-3.1-2.1-.4-.2-.7-.6-.7-1.1V9.9C15.9 9.3 14 9 12 9z"></path></svg>
+                </button>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:9px">
+                <sc-for list="{{ pad }}" as="k" hint-placeholder-count="12">
+                  <button type="button" onClick="{{ k.press }}" style="height:34px;border:none;border-radius:8px;background:linear-gradient(180deg,#3A3946,#25242F);color:#E8E7F2;font-family:'IBM Plex Mono',monospace;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.16),0 2px 3px rgba(0,0,0,.45)" style-active="background:linear-gradient(180deg,#2C2B36,#1B1A23)">
+                    <span style="font-size:14px;font-weight:600">{{ k.d }}</span>
+                    <span style="font-size:7.5px;letter-spacing:.1em;color:#9A99A6">{{ k.sub }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="font-size:14px;color:var(--sub);font-weight:400;text-align:center;max-width:320px;line-height:1.5">{{ hint }}</div>
+      </div>
+
+      <div style="flex:0 0 292px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;font-weight:600;color:var(--sub);letter-spacing:.09em;text-transform:uppercase;margin-left:4px">This session</div>
+        <div style="background:var(--card);border-radius:16px;overflow:hidden">
+          <sc-for list="{{ ledger }}" as="l" hint-placeholder-count="7">
+            <div style="display:flex;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:0.5px solid var(--line)">
+              <span style="font-size:14.5px;color:var(--sub);font-weight:400">{{ l.k }}</span>
+              <span style="font-size:14.5px;font-weight:600;font-variant-numeric:tabular-nums;text-align:right">{{ l.v }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:var(--pribg);border-radius:16px;padding:18px;position:relative;overflow:hidden">
+          <svg width="220" height="40" viewBox="0 0 220 40" style="position:absolute;right:-14px;bottom:-8px;opacity:.3" aria-hidden="true"><path d="M8 31 L34 9 L60 31 L86 9 L112 31 L138 9 L164 31 L190 9 L214 29" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          <div style="font-size:15px;font-weight:600;color:var(--pri);position:relative">Ganza never holds the money</div>
+          <div style="font-size:14px;color:var(--sub);font-weight:400;line-height:1.5;margin-top:7px;position:relative">One person records it. Another approves it. The cash moves the way the group already moves it.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;language&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;rw&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;'en'|'rw'&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;frame&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;feature&quot;,&quot;smart&quot;],&quot;default&quot;:&quot;feature&quot;,&quot;tsType&quot;:&quot;'feature'|'smart'&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;latency&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:2,&quot;min&quot;:0,&quot;max&quot;:5,&quot;step&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;ussdCode&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;*384*48293#&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo&quot;}}">
+const MEM = {
+  '01': { n: 'Vedaste N.',  sav: 120000, loan: 0 },
+  '02': { n: 'Christian I.', sav: 95000, loan: 40000 },
+  '03': { n: 'Olivier R.',  sav: 150000, loan: 0 },
+  '04': { n: 'Lewis B.',    sav: 80000,  loan: 25000 },
+  '05': { n: 'Fabrice H.',  sav: 110000, loan: 0 },
+  '06': { n: 'Nadia U.',    sav: 60000,  loan: 0 },
+  '07': { n: 'Honorine M.', sav: 130000, loan: 55000 },
+  '08': { n: 'Yvette U.',   sav: 105000, loan: 0 }
+};
+const IDS = Object.keys(MEM);
+const STD = 10000;
+const P = {
+  treasurer: { name: 'Honorine Mukamana', num: '0788 214 907', role: { en: 'Treasurer', rw: 'Umubitsi' }, mins: 60, mid: '07' },
+  president: { name: 'Vedaste Nkurunziza', num: '0788 431 552', role: { en: 'President', rw: 'Perezida' }, mins: 45, mid: '01' },
+  secretary: { name: 'Yvette Uwase',      num: '0788 660 118', role: { en: 'Secretary', rw: 'Umunyamabanga' }, mins: 45, mid: '08' },
+  member:    { name: 'Fabrice Habimana',  num: '0788 902 476', role: { en: 'Member', rw: 'Umunyamuryango' }, mins: 15, mid: '05' },
+  guest:     { name: 'Unregistered SIM',  num: '0788 000 512', role: { en: 'Guest', rw: 'Umushyitsi' }, mins: 0, mid: null }
+};
+const PAD = [
+  ['1', ''], ['2', 'abc'], ['3', 'def'], ['4', 'ghi'], ['5', 'jkl'], ['6', 'mno'],
+  ['7', 'pqrs'], ['8', 'tuv'], ['9', 'wxyz'], ['*', '+'], ['0', '\u2423'], ['#', '']
+];
+const COL = [[0, 3, 6, 9], [1, 4, 7, 10], [2, 5, 8, 11]];
+const F = n => Number(n).toLocaleString('en-US');
+
+const SEG = on => "border:none;border-radius:999px;padding:11px 17px;font-size:14.5px;font-weight:" + (on ? 600 : 500) + ";cursor:pointer;background:" + (on ? "var(--card)" : "transparent") + ";color:" + (on ? "var(--ink)" : "var(--sub)");
+
+class Component extends DCLogic {
+  state = {
+    intro: true, persona: 'treasurer', langOv: null, frameOv: null,
+    node: null, reply: '', err: '', loading: false, stack: [],
+    coll: [], exp: [], pinOk: false, acting: false,
+    ctx: {}, page: 0, sms: null, simInput: '', simFeedback: '', simTick: 0,
+    pending: [
+      { id: 'd1', type: 'deposit', by: 'treasurer', collected: 80000, exp: 5000, net: 75000 },
+      { id: 'l1', type: 'loan', by: 'treasurer', mid: '03', amt: 150000, rate: 5 }
+    ],
+    approved: [], groupTotal: 1840000, contribution: STD
+  };
+
+  get lang() { return this.state.langOv || this.props.language || 'en'; }
+  get frame() { return this.state.frameOv || this.props.frame || 'feature'; }
+  get code() { return this.props.ussdCode || '*384*48293#'; }
+  get delay() { const l = this.props.latency == null ? 2 : Number(this.props.latency); return 90 + l * 190; }
+  get who() { return this.state.acting ? 'treasurer' : this.state.persona; }
+  T(en, rw) { return this.lang === 'rw' ? rw : en; }
+  get collTotal() { return this.state.coll.reduce((a, c) => a + c.amt, 0); }
+  get expTotal() { return this.state.exp.reduce((a, c) => a + c.amt, 0); }
+
+  componentDidMount() {
+    this._key = e => {
+      if (this.state.intro) { if (e.key === 'Enter') this.start(); return; }
+      if (/^[0-9*#]$/.test(e.key)) { e.preventDefault(); this.type(e.key); }
+      else if (e.key === 'Enter') { e.preventDefault(); this.state.node ? this.send() : this.dial(); }
+      else if (e.key === 'Backspace') { e.preventDefault(); this.setState(s => ({ reply: s.reply.slice(0, -1) })); }
+      else if (e.key === 'Escape') { e.preventDefault(); this.hangUp(); }
+    };
+    window.addEventListener('keydown', this._key);
+    this._t = setInterval(() => this.setState({ simTick: 0 }), 30000);
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this._key); clearInterval(this._t); clearTimeout(this._d); clearTimeout(this._s); clearTimeout(this._s2); }
+
+  start() { this.setState({ intro: false }); }
+  reset() {
+    clearTimeout(this._d); clearTimeout(this._s);
+    this.setState({
+      node: null, reply: '', err: '', loading: false, stack: [], coll: [], exp: [],
+      pinOk: false, acting: false, ctx: {}, page: 0, sms: null, contribution: STD,
+      pending: [
+        { id: 'd1', type: 'deposit', by: 'treasurer', collected: 80000, exp: 5000, net: 75000 },
+        { id: 'l1', type: 'loan', by: 'treasurer', mid: '03', amt: 150000, rate: 5 }
+      ], approved: [], simFeedback: ''
+    });
+  }
+  setPersona(k) {
+    clearTimeout(this._d);
+    this.setState({ persona: k, node: null, reply: '', err: '', loading: false, stack: [], pinOk: false, acting: false, ctx: {}, page: 0, simFeedback: '' });
+  }
+  applySim() {
+    const digits = (this.state.simInput || '').replace(/\D/g, '');
+    const hit = Object.keys(P).find(k => P[k].num.replace(/\D/g, '') === digits);
+    if (hit) { this.setPersona(hit); this.setState({ simFeedback: this.T('SIM recognised · ', 'SIM izwi · ') + P[hit].name }); }
+    else if (digits.length > 6) { this.setPersona('guest'); this.setState({ simFeedback: this.T('Unknown number — this SIM gets the guest menu.', 'Nimero itazwi — iyi SIM ibona menu y’umushyitsi.') }); }
+    else this.setState({ simFeedback: this.T('Type one of the numbers above.', 'Andika imwe mu nimero zo hejuru.') });
+  }
+
+  dial() {
+    const first = ['treasurer', 'president', 'secretary'].includes(this.state.persona) ? 'pin'
+      : this.state.persona === 'member' ? 'mb_main' : 'gs_main';
+    this.setState({ reply: '', err: '' });
+    this.go(first, false);
+  }
+  hangUp() {
+    clearTimeout(this._d);
+    this.setState({ node: null, reply: '', err: '', loading: false, stack: [], acting: false, page: 0 });
+  }
+  go(id, push = true) {
+    clearTimeout(this._d);
+    this.setState(s => ({ loading: true, err: '', reply: '', stack: push && s.node ? s.stack.concat(s.node) : (push ? s.stack : []), node: s.node }));
+    this._d = setTimeout(() => this.setState({ loading: false, node: id }), this.delay);
+  }
+  back() {
+    const st = this.state.stack.slice();
+    const prev = st.pop();
+    if (!prev) return this.go(this.homeId(), false);
+    clearTimeout(this._d);
+    this.setState({ loading: true, err: '', reply: '', stack: st });
+    this._d = setTimeout(() => this.setState({ loading: false, node: prev }), this.delay);
+  }
+  homeId() {
+    const p = this.state.acting ? 'treasurer' : this.state.persona;
+    return p === 'member' ? 'mb_main' : p === 'guest' ? 'gs_main' : p === 'treasurer' ? 'tr_main' : 'ld_main';
+  }
+  type(d) { if (!this.state.node || this.state.loading) return; this.setState(s => ({ reply: (s.reply + d).slice(0, 14), err: '' })); }
+  sms(text) {
+    clearTimeout(this._s);
+    clearTimeout(this._s2);
+    const time = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    const id = 'sms' + Date.now();
+    this.setState({ sms: null });
+    this._s2 = setTimeout(() => {
+      this.setState({ sms: { text, time, id } });
+      this._s = setTimeout(() => this.setState({ sms: null }), 6200);
+    }, 40);
+  }
+
+  send() {
+    const n = this.defs()[this.state.node];
+    if (!n || this.state.loading) return;
+    const v = this.state.reply.trim();
+    if (n.input) {
+      if (!v) return this.setState({ err: this.T('Enter a value.', 'Injiza agaciro.') });
+      const r = n.input.on.call(this, v);
+      if (r) this.setState({ err: r });
+      return;
+    }
+    if (!v) return;
+    const opt = (n.opts || []).find(o => o.k === v);
+    if (opt) return opt.go.call(this);
+    if (v === '0' && n.back !== false) return this.back();
+    if (v === '00') return this.go(this.homeId(), false);
+    this.setState({ err: this.T('Invalid choice. Try again.', 'Ntibyemewe. Ongera ugerageze.'), reply: '' });
+  }
+
+  defs() {
+    const T = (a, b) => this.T(a, b);
+    const S = this.state;
+    const me = P[S.persona];
+    const cur = P[this.who];
+    const nMem = IDS.length;
+    const memberName = id => (MEM[id] ? MEM[id].n : '');
+    const bank = () => ({
+      head: 'GANZA · TWITEZE IMBERE',
+      body: [{ t: T('Meeting: Tue 04 Aug', 'Inama: Kabiri 04 Kanama') }]
+    });
+    const pendingVisible = () => S.pending.filter(p => p.by !== this.who);
+
+    const d = {};
+
+    d.pin = {
+      head: 'GANZA · TWITEZE IMBERE',
+      body: [
+        { t: T('Welcome ', 'Murakaza neza ') + me.name.split(' ')[0] },
+        { t: cur.role[this.lang] + ' · ' + T('session ', 'igihe ') + cur.mins + T(' min', ' iminota) ') }
+      ],
+      input: {
+        prompt: T('Enter your PIN:', 'Injiza PIN yawe:'), mask: true,
+        on(v) {
+          if (v !== '1234') return T('Wrong PIN. 2 tries left.', 'PIN itari yo. Hasigaye 2.');
+          this.setState({ pinOk: true });
+          this.go(S.persona === 'treasurer' ? 'tr_main' : 'ld_main', false);
+        }
+      },
+      foot: T('Demo PIN: 1234', 'PIN y’igerageza: 1234'), back: false
+    };
+
+    /* ---------- TREASURER ---------- */
+    d.tr_main = {
+      head: T('TREASURER · Honorine', 'UMUBITSI · Honorine'),
+      body: [
+        { t: (S.acting ? T('Acting as Treasurer (', 'Ukora nk’Umubitsi (') + me.role[this.lang] + ')\n' : '') + T('Collected today: ', 'Byakusanyijwe uyu munsi: ') + F(this.collTotal) + ' RWF' }
+      ],
+      opts: [
+        { k: '1', label: T('Collect contributions', 'Kwakira umusanzu'), go() { this.setState({ page: 0 }); this.go('tr_coll_id'); } },
+        { k: '2', label: T('Record an expense', 'Kwandika ikiguzi'), go() { this.go('tr_exp_amt'); } },
+        { k: '3', label: T('Submit deposit', 'Kohereza ubwizigame'), go() { this.go('tr_dep'); } },
+        { k: '4', label: T('Give a loan', 'Gutanga inguzanyo'), go() { this.go('tr_loan_id'); } },
+        { k: '5', label: T('Receive loan payment', 'Kwakira ubwishyu'), go() { this.go('tr_pay_id'); } },
+        { k: '6', label: T('Loan list', 'Urutonde rw’inguzanyo'), go() { this.setState({ page: 0 }); this.go('tr_loans'); } },
+        { k: '7', label: T('Members', 'Abanyamuryango'), go() { this.go('tr_mem'); } }
+      ],
+      back: false
+    };
+
+    d.tr_coll_id = {
+      head: T('COLLECT · member ID', 'KWAKIRA · ID y’umunyamuryango'),
+      body: [
+        { t: T('Recorded: ', 'Byanditswe: ') + S.coll.length + '/' + nMem + '  ·  ' + F(this.collTotal) + ' RWF' },
+        { t: T('IDs 01-08', 'ID 01-08') }
+      ],
+      input: {
+        prompt: T('Member ID (0 = finish):', 'ID y’umunyamuryango (0 = kurangiza):'),
+        on(v) {
+          if (v === '0') return this.go('tr_coll_sum', false);
+          const id = v.padStart(2, '0');
+          if (!MEM[id]) return T('No member with that ID.', 'Nta munyamuryango ufite iyo ID.');
+          if (S.coll.some(c => c.id === id)) return T(memberName(id) + ' already paid today.', memberName(id) + ' yishyuye uyu munsi.');
+          this.setState({ ctx: { id } });
+          this.go('tr_coll_amt');
+        }
+      }
+    };
+
+    d.tr_coll_amt = {
+      head: memberName(S.ctx.id) + ' · ID ' + (S.ctx.id || ''),
+      body: [
+        { t: T('Standard contribution', 'Umusanzu usanzwe') + ': ' + F(S.contribution) + ' RWF' },
+        { t: T('Savings so far: ', 'Ubwizigame: ') + F((MEM[S.ctx.id] || {}).sav || 0) + ' RWF' }
+      ],
+      opts: [
+        { k: '1', label: T('Confirm ', 'Emeza ') + F(S.contribution) + ' RWF', go() { this.record(S.ctx.id, S.contribution); } },
+        { k: '2', label: T('Other amount', 'Andi mafaranga'), go() { this.go('tr_coll_other'); } }
+      ],
+      foot: T('0 Back', '0 Subira inyuma')
+    };
+
+    d.tr_coll_other = {
+      head: memberName(S.ctx.id) + ' · ' + T('other amount', 'andi mafaranga'),
+      body: [{ t: T('Standard is ', 'Usanzwe ni ') + F(S.contribution) + ' RWF' }],
+      input: {
+        prompt: T('Amount in RWF:', 'Amafaranga (RWF):'),
+        on(v) {
+          const a = parseInt(v.replace(/\D/g, ''), 10);
+          if (!a) return T('Enter a number.', 'Injiza umubare.');
+          this.record(S.ctx.id, a);
+        }
+      }
+    };
+
+    d.tr_coll_ok = {
+      head: T('RECORDED', 'BYANDITSWE') + ' \u2713',
+      body: [
+        { t: memberName(S.ctx.id) + ' · ' + F(S.ctx.amt || 0) + ' RWF' },
+        { t: T('SMS receipt sent to ', 'Ubutumwa bwoherejwe kuri ') + '078\u2022 \u2022\u2022\u2022 ' + (S.ctx.id ? String(137 + Number(S.ctx.id) * 61) : '') },
+        { t: T('Collected: ', 'Byakusanyijwe: ') + F(this.collTotal) + ' RWF · ' + S.coll.length + '/' + nMem }
+      ],
+      opts: [
+        { k: '1', label: T('Next member', 'Umunyamuryango ukurikira'), go() { this.go('tr_coll_id', false); } },
+        { k: '2', label: T('Finish collection', 'Kurangiza'), go() { this.go('tr_coll_sum', false); } }
+      ]
+    };
+
+    d.tr_coll_sum = {
+      head: T('COLLECTION SUMMARY', 'INCAMAKE Y’IBYAKUSANYIJWE'),
+      body: [
+        { t: S.coll.length + '/' + nMem + T(' members paid', ' bishyuye') },
+        { t: T('Total: ', 'Byose: ') + F(this.collTotal) + ' RWF' },
+        { t: T('Expenses: ', 'Ibiguzi: ') + F(this.expTotal) + ' RWF' },
+        { t: T('Net to deposit: ', 'Azabikwa: ') + F(this.collTotal - this.expTotal) + ' RWF' }
+      ],
+      opts: [
+        { k: '1', label: T('Submit deposit', 'Kohereza ubwizigame'), go() { this.go('tr_dep'); } },
+        { k: '2', label: T('Collect more', 'Komeza kwakira'), go() { this.go('tr_coll_id', false); } }
+      ],
+      foot: T('00 Main menu', '00 Menu nyamukuru')
+    };
+
+    d.tr_exp_amt = {
+      head: T('RECORD EXPENSE', 'KWANDIKA IKIGUZI'),
+      body: [{ t: T('Expenses today: ', 'Ibiguzi uyu munsi: ') + F(this.expTotal) + ' RWF' }],
+      input: {
+        prompt: T('Amount in RWF:', 'Amafaranga (RWF):'),
+        on(v) {
+          const a = parseInt(v.replace(/\D/g, ''), 10);
+          if (!a) return T('Enter a number.', 'Injiza umubare.');
+          this.setState({ ctx: Object.assign({}, S.ctx, { amt: a }) });
+          this.go('tr_exp_cat');
+        }
+      }
+    };
+
+    const expCat = (label) => function () {
+      this.setState(s => ({ exp: s.exp.concat([{ amt: s.ctx.amt, label }]) }));
+      this.go('tr_exp_ok', false);
+    };
+    d.tr_exp_cat = {
+      head: F(S.ctx.amt || 0) + ' RWF · ' + T('what for?', 'ni iki?'),
+      opts: [
+        { k: '1', label: T('Refreshments', 'Ibinyobwa'), go: expCat(T('Refreshments', 'Ibinyobwa')) },
+        { k: '2', label: T('Transport', 'Urugendo'), go: expCat(T('Transport', 'Urugendo')) },
+        { k: '3', label: T('Late fine returned', 'Amande yasubijwe'), go: expCat(T('Fine', 'Amande')) },
+        { k: '4', label: T('Other', 'Ibindi'), go: expCat(T('Other', 'Ibindi')) }
+      ]
+    };
+
+    d.tr_exp_ok = {
+      head: T('EXPENSE RECORDED', 'IKIGUZI CYANDITSWE') + ' \u2713',
+      body: [
+        { t: F(S.ctx.amt || 0) + ' RWF' },
+        { t: T('Expenses today: ', 'Ibiguzi uyu munsi: ') + F(this.expTotal) + ' RWF' },
+        { t: T('Net to deposit: ', 'Azabikwa: ') + F(this.collTotal - this.expTotal) + ' RWF' }
+      ],
+      opts: [
+        { k: '1', label: T('Add another', 'Ongeraho ikindi'), go() { this.go('tr_exp_amt', false); } },
+        { k: '2', label: T('Main menu', 'Menu nyamukuru'), go() { this.go(this.homeId(), false); } }
+      ]
+    };
+
+    d.tr_dep = {
+      head: T('SUBMIT DEPOSIT', 'KOHEREZA UBWIZIGAME'),
+      body: [
+        { t: T('Collected: ', 'Byakusanyijwe: ') + F(this.collTotal) + ' RWF' },
+        { t: T('Expenses:  ', 'Ibiguzi:  ') + F(this.expTotal) + ' RWF' },
+        { t: T('NET DEPOSIT: ', 'AZABIKWA: ') + F(this.collTotal - this.expTotal) + ' RWF' },
+        { t: T('Approved by: President or Secretary', 'Byemezwa na: Perezida cyangwa Umunyamabanga') }
+      ],
+      opts: [
+        { k: '1', label: T('Send for approval', 'Ohereza kwemezwa'), go() {
+            const net = this.collTotal - this.expTotal;
+            if (net <= 0) { this.setState({ err: T('Nothing collected yet.', 'Nta mafaranga yakusanyijwe.') }); return; }
+            this.setState(s => ({ pending: s.pending.concat([{ id: 'd' + Date.now(), type: 'deposit', by: this.who, collected: this.collTotal, exp: this.expTotal, net }]) }));
+            this.go('tr_dep_ok', false);
+          } }
+      ],
+      foot: T('0 Back', '0 Subira inyuma')
+    };
+
+    d.tr_dep_ok = {
+      head: T('SENT FOR APPROVAL', 'BYOHEREJWE KWEMEZWA'),
+      body: [
+        { t: F(this.collTotal - this.expTotal) + ' RWF' },
+        { t: T('Waiting for Vedaste (President)\nor Yvette (Secretary).', 'Bitegereje Vedaste (Perezida)\ncyangwa Yvette (Umunyamabanga).') },
+        { t: T('You cannot approve your own deposit.', 'Ntushobora kwemeza ubwizigame bwawe.') }
+      ],
+      end: true
+    };
+
+    d.tr_loan_id = {
+      head: T('GIVE LOAN · member ID', 'INGUZANYO · ID'),
+      input: {
+        prompt: T('Member ID:', 'ID y’umunyamuryango:'),
+        on(v) {
+          const id = v.padStart(2, '0');
+          if (!MEM[id]) return T('No member with that ID.', 'Nta munyamuryango ufite iyo ID.');
+          if (MEM[id].loan > 0) return memberName(id) + T(' still owes ', ' aracyafite umwenda ') + F(MEM[id].loan) + ' RWF.';
+          this.setState({ ctx: { id } });
+          this.go('tr_loan_amt');
+        }
+      }
+    };
+
+    d.tr_loan_amt = {
+      head: memberName(S.ctx.id) + ' · ' + T('loan', 'inguzanyo'),
+      body: [
+        { t: T('Savings: ', 'Ubwizigame: ') + F((MEM[S.ctx.id] || {}).sav || 0) + ' RWF' },
+        { t: T('Maximum (3x): ', 'Ntarengwa (3x): ') + F(((MEM[S.ctx.id] || {}).sav || 0) * 3) + ' RWF' }
+      ],
+      input: {
+        prompt: T('Loan amount in RWF:', 'Inguzanyo (RWF):'),
+        on(v) {
+          const a = parseInt(v.replace(/\D/g, ''), 10);
+          const max = ((MEM[S.ctx.id] || {}).sav || 0) * 3;
+          if (!a) return T('Enter a number.', 'Injiza umubare.');
+          if (a > max) return T('Above the 3x limit (', 'Birenze 3x (') + F(max) + ' RWF).';
+          this.setState({ ctx: Object.assign({}, S.ctx, { amt: a }) });
+          this.go('tr_loan_rate');
+        }
+      }
+    };
+
+    const rate = r => function () { this.setState({ ctx: Object.assign({}, S.ctx, { rate: r }) }); this.go('tr_loan_conf'); };
+    d.tr_loan_rate = {
+      head: T('INTEREST RATE', 'INYUNGU'),
+      body: [{ t: F(S.ctx.amt || 0) + ' RWF · ' + memberName(S.ctx.id) }],
+      opts: [
+        { k: '1', label: '5% ' + T('per month', 'ku kwezi'), go: rate(5) },
+        { k: '2', label: '10% ' + T('per month', 'ku kwezi'), go: rate(10) },
+        { k: '3', label: T('Group default (5%)', 'Iy’itsinda (5%)'), go: rate(5) }
+      ]
+    };
+
+    d.tr_loan_conf = {
+      head: T('CONFIRM LOAN', 'EMEZA INGUZANYO'),
+      body: [
+        { t: memberName(S.ctx.id) },
+        { t: F(S.ctx.amt || 0) + ' RWF @ ' + (S.ctx.rate || 5) + '%' },
+        { t: T('Repay in 3 months', 'Kwishyura mu mezi 3') }
+      ],
+      opts: [
+        { k: '1', label: T('Confirm and send', 'Emeza wohereze'), go() {
+            this.setState(s => ({ pending: s.pending.concat([{ id: 'l' + Date.now(), type: 'loan', by: this.who, mid: s.ctx.id, amt: s.ctx.amt, rate: s.ctx.rate || 5 }]) }));
+            this.go('tr_loan_ok', false);
+          } },
+        { k: '2', label: T('Cancel', 'Reka'), go() { this.go(this.homeId(), false); } }
+      ]
+    };
+
+    d.tr_loan_ok = {
+      head: T('SENT FOR APPROVAL', 'BYOHEREJWE KWEMEZWA'),
+      body: [
+        { t: F(S.ctx.amt || 0) + ' RWF \u2192 ' + memberName(S.ctx.id) },
+        { t: T('A leader must approve before cash moves.', 'Umuyobozi agomba kwemeza mbere y’amafaranga.') }
+      ],
+      end: true
+    };
+
+    d.tr_pay_id = {
+      head: T('LOAN PAYMENT · member ID', 'UBWISHYU · ID'),
+      body: [{ t: T('With active loans: 02, 04, 07', 'Bafite inguzanyo: 02, 04, 07') }],
+      input: {
+        prompt: T('Member ID:', 'ID y’umunyamuryango:'),
+        on(v) {
+          const id = v.padStart(2, '0');
+          if (!MEM[id]) return T('No member with that ID.', 'Nta munyamuryango ufite iyo ID.');
+          if (!MEM[id].loan) return memberName(id) + T(' has no active loan.', ' nta nguzanyo afite.');
+          this.setState({ ctx: { id } });
+          this.go('tr_pay_amt');
+        }
+      }
+    };
+
+    d.tr_pay_amt = {
+      head: memberName(S.ctx.id) + ' · ' + T('owes', 'afite umwenda'),
+      body: [{ t: F((MEM[S.ctx.id] || {}).loan || 0) + ' RWF' }],
+      input: {
+        prompt: T('Amount paid in RWF:', 'Ayishyuye (RWF):'),
+        on(v) {
+          const a = parseInt(v.replace(/\D/g, ''), 10);
+          const bal = (MEM[S.ctx.id] || {}).loan || 0;
+          if (!a) return T('Enter a number.', 'Injiza umubare.');
+          if (a > bal) return T('More than the balance (', 'Birenze umwenda (') + F(bal) + ' RWF).';
+          MEM[S.ctx.id].loan = bal - a;
+          this.setState({ ctx: Object.assign({}, S.ctx, { amt: a }) });
+          this.sms(T('Loan payment of ', 'Ubwishyu bwa ') + F(a) + T(' RWF received from ', ' RWF bwakiriwe kuva kuri ') + memberName(S.ctx.id) + '. ' + T('Remaining: ', 'Asigaye: ') + F(bal - a) + ' RWF. Ref LP' + (1000 + Math.floor(Math.random() * 8999)));
+          this.go('tr_pay_ok', false);
+        }
+      }
+    };
+
+    d.tr_pay_ok = {
+      head: T('PAYMENT RECORDED', 'UBWISHYU BWANDITSWE') + ' \u2713',
+      body: [
+        { t: memberName(S.ctx.id) + ' · ' + F(S.ctx.amt || 0) + ' RWF' },
+        { t: T('Remaining loan: ', 'Umwenda usigaye: ') + F((MEM[S.ctx.id] || {}).loan || 0) + ' RWF' },
+        { t: T('SMS receipt sent.', 'Ubutumwa bwoherejwe.') }
+      ],
+      opts: [
+        { k: '1', label: T('Another payment', 'Ubundi bwishyu'), go() { this.go('tr_pay_id', false); } },
+        { k: '2', label: T('Main menu', 'Menu nyamukuru'), go() { this.go(this.homeId(), false); } }
+      ]
+    };
+
+    const loanRows = IDS.filter(i => MEM[i].loan > 0);
+    const pageRows = (rows, per) => rows.slice(S.page * per, S.page * per + per);
+    d.tr_loans = {
+      head: T('ACTIVE LOANS ', 'INGUZANYO ZIRIHO ') + '(' + loanRows.length + ')',
+      body: pageRows(loanRows, 5).map(i => ({ t: i + ' ' + MEM[i].n + '  ' + F(MEM[i].loan) })),
+      opts: loanRows.length > 5 ? [{ k: '99', label: T('More', 'Ibindi'), go() { this.setState(s => ({ page: s.page + 1, reply: '' })); } }] : [],
+      foot: T('Amounts in RWF · 0 Back', 'Mu RWF · 0 Subira inyuma')
+    };
+
+    d.tr_mem = {
+      head: T('MEMBERS ', 'ABANYAMURYANGO ') + '(' + nMem + ')',
+      opts: [
+        { k: '1', label: T('Register a member', 'Kwandika umunyamuryango'), go() { this.go('mem_reg_name'); } },
+        { k: '2', label: T('Remove a member', 'Kuvana umunyamuryango'), go() { this.go('mem_rm_id'); } },
+        { k: '3', label: T('Member list', 'Urutonde'), go() { this.setState({ page: 0 }); this.go('mem_list'); } }
+      ],
+      foot: T('0 Back', '0 Subira inyuma')
+    };
+
+    d.mem_reg_name = {
+      head: T('REGISTER MEMBER', 'KWANDIKA UMUNYAMURYANGO'),
+      body: [{ t: T('Name (press SEND for demo name)', 'Izina (kanda SEND ku izina ry’igerageza)') }],
+      input: { prompt: T('Full name:', 'Amazina yombi:'), free: true, on(v) { this.setState({ ctx: { name: /[a-z]/i.test(v) ? v : 'Jeanne Mukandori' } }); this.go('mem_reg_phone'); } }
+    };
+    d.mem_reg_phone = {
+      head: S.ctx.name || T('New member', 'Umushya'),
+      body: [{ t: T('Their number is their login.', 'Nimero ye ni uko yinjira.') }],
+      input: {
+        prompt: T('Phone number:', 'Nimero ya telefoni:'),
+        on(v) { const p = v.replace(/\D/g, ''); if (p.length < 9) return T('Needs 10 digits.', 'Bisaba imibare 10.'); this.setState({ ctx: Object.assign({}, S.ctx, { phone: p }) }); this.go('mem_reg_ok', false); }
+      }
+    };
+    d.mem_reg_ok = {
+      head: T('MEMBER ADDED', 'YONGEWEHO') + ' \u2713',
+      body: [
+        { t: (S.ctx.name || '') + ' · ID 09' },
+        { t: '0' + (S.ctx.phone || '') },
+        { t: T('They can dial ', 'Ashobora kanda ') + this.code + T(' now.', ' ubu.') }
+      ],
+      end: true
+    };
+
+    d.mem_rm_id = {
+      head: T('REMOVE MEMBER', 'KUVANA UMUNYAMURYANGO'),
+      input: {
+        prompt: T('Member ID:', 'ID y’umunyamuryango:'),
+        on(v) {
+          const id = v.padStart(2, '0');
+          if (!MEM[id]) return T('No member with that ID.', 'Nta munyamuryango ufite iyo ID.');
+          if (MEM[id].loan > 0) return memberName(id) + T(' owes ', ' afite umwenda ') + F(MEM[id].loan) + T(' RWF. Cannot remove.', ' RWF. Ntibishoboka.');
+          this.setState({ ctx: { id } });
+          this.go('mem_rm_conf');
+        }
+      }
+    };
+    d.mem_rm_conf = {
+      head: T('CONFIRM REMOVAL', 'EMEZA IVANWA'),
+      body: [
+        { t: memberName(S.ctx.id) + ' · ID ' + (S.ctx.id || '') },
+        { t: T('Savings to pay out: ', 'Ubwizigame bwo gusubiza: ') + F((MEM[S.ctx.id] || {}).sav || 0) + ' RWF' },
+        { t: T('Another admin must approve.', 'Undi muyobozi agomba kwemeza.') }
+      ],
+      opts: [
+        { k: '1', label: T('Send for approval', 'Ohereza kwemezwa'), go() { this.go('mem_rm_ok', false); } },
+        { k: '2', label: T('Cancel', 'Reka'), go() { this.go(this.homeId(), false); } }
+      ]
+    };
+    d.mem_rm_ok = {
+      head: T('SENT FOR APPROVAL', 'BYOHEREJWE KWEMEZWA'),
+      body: [{ t: memberName(S.ctx.id) + T(' will be removed once a second admin approves. Savings are paid at the next meeting.', ' azavanwaho iyo undi muyobozi yemeje. Ubwizigame busubizwa mu nama itaha.') }],
+      end: true
+    };
+
+    d.mem_list = {
+      head: T('MEMBER LIST ', 'URUTONDE ') + (S.page + 1) + '/2',
+      body: pageRows(IDS, 4).map(i => ({ t: i + ' ' + MEM[i].n + '  ' + F(MEM[i].sav) })),
+      opts: [
+        S.page < 1 ? { k: '99', label: T('More', 'Ibindi'), go() { this.setState(s => ({ page: s.page + 1, reply: '' })); } } : { k: '98', label: T('Previous', 'Ibibanza'), go() { this.setState(s => ({ page: 0, reply: '' })); } }
+      ],
+      foot: T('Savings in RWF · 0 Back', 'Ubwizigame mu RWF · 0 Subira')
+    };
+
+    /* ---------- LEADERS ---------- */
+    d.ld_main = {
+      head: (me.role[this.lang] || '').toUpperCase() + ' · ' + me.name.split(' ')[0],
+      body: [{ t: T('Waiting for you: ', 'Bitegereje: ') + pendingVisible().length }],
+      opts: [
+        { k: '1', label: T('Pending approvals', 'Ibyemezwa'), go() { this.go('ld_appr'); } },
+        { k: '2', label: T('Outstanding loans', 'Inguzanyo ziriho'), go() { this.setState({ page: 0 }); this.go('tr_loans'); } },
+        { k: '3', label: T('Group report', 'Raporo y’itsinda'), go() { this.go('ld_report'); } },
+        { k: '4', label: T('Members', 'Abanyamuryango'), go() { this.go('tr_mem'); } },
+        { k: '5', label: T('Change contribution', 'Guhindura umusanzu'), go() { this.go('ld_chg'); } },
+        { k: '6', label: T('Act as Treasurer', 'Kora nk’Umubitsi'), go() { this.setState({ acting: true }); this.go('tr_main', false); } }
+      ],
+      back: false
+    };
+
+    const pv = pendingVisible();
+    d.ld_appr = {
+      head: T('PENDING APPROVALS', 'IBYEMEZWA'),
+      body: pv.length ? [] : [{ t: T('Nothing waiting for you.\nDeposits you submitted yourself never appear here.', 'Nta kintu kibitegereje.\nIbyo wohereje ubwawe ntibigaragara hano.') }],
+      opts: pv.map((p, i) => ({
+        k: String(i + 1),
+        label: p.type === 'deposit'
+          ? T('Deposit ', 'Ubwizigame ') + F(p.net) + ' RWF · ' + P[p.by].name.split(' ')[0]
+          : T('Loan ', 'Inguzanyo ') + F(p.amt) + ' RWF · ' + memberName(p.mid),
+        go() { this.setState({ ctx: { pid: p.id } }); this.go(p.type === 'deposit' ? 'ld_dep' : 'ld_loan'); }
+      })),
+      foot: T('0 Back', '0 Subira inyuma')
+    };
+
+    const item = S.pending.find(p => p.id === S.ctx.pid) || {};
+    d.ld_dep = {
+      head: T('DEPOSIT · 04 Aug', 'UBWIZIGAME · 04 Kanama'),
+      body: [
+        { t: T('Submitted by ', 'Yoherejwe na ') + (P[item.by] ? P[item.by].name : '') },
+        { t: T('Collected: ', 'Byakusanyijwe: ') + F(item.collected || 0) },
+        { t: T('Expenses:  ', 'Ibiguzi:  ') + F(item.exp || 0) },
+        { t: T('NET: ', 'IGITERANYO: ') + F(item.net || 0) + ' RWF' }
+      ],
+      opts: [
+        { k: '1', label: T('Approve', 'Emeza'), go() {
+            this.setState(s => ({ pending: s.pending.filter(p => p.id !== s.ctx.pid), groupTotal: s.groupTotal + (item.net || 0) }));
+            this.sms(T('Deposit of ', 'Ubwizigame bwa ') + F(item.net || 0) + T(' RWF approved by ', ' RWF bwemejwe na ') + me.name.split(' ')[0] + '. ' + T('Group savings: ', 'Ubwizigame bw’itsinda: ') + F(S.groupTotal + (item.net || 0)) + ' RWF.');
+            this.go('ld_dep_ok', false);
+          } },
+        { k: '2', label: T('Reject', 'Anga'), go() { this.go('ld_dep_no'); } }
+      ],
+      foot: T('Amounts in RWF · 0 Back', 'Mu RWF · 0 Subira inyuma')
+    };
+    d.ld_dep_ok = {
+      head: T('APPROVED', 'BYEMEJWE') + ' \u2713',
+      body: [
+        { t: F(item.net || 0) + T(' RWF banked.', ' RWF byabitswe.') },
+        { t: T('Group savings: ', 'Ubwizigame bw’itsinda: ') + F(S.groupTotal) + ' RWF' },
+        { t: T('SMS sent to all 8 members.', 'SMS yoherejwe ku banyamuryango 8.') }
+      ],
+      end: true
+    };
+    d.ld_dep_no = {
+      head: T('REJECT DEPOSIT', 'KWANGA UBWIZIGAME'),
+      opts: [
+        { k: '1', label: T('Amount does not match cash', 'Amafaranga ntahwanye'), go() { this.go('ld_dep_no_ok', false); } },
+        { k: '2', label: T('Expense not agreed', 'Ikiguzi kitemewe'), go() { this.go('ld_dep_no_ok', false); } },
+        { k: '3', label: T('Other reason', 'Indi mpamvu'), go() { this.go('ld_dep_no_ok', false); } }
+      ]
+    };
+    d.ld_dep_no_ok = {
+      head: T('REJECTED', 'BYANZWE'),
+      body: [{ t: T('Honorine is notified by SMS and can correct the expenses and resubmit. Nothing is banked.', 'Honorine abimenyeshejwe kuri SMS, ashobora kosora ibiguzi no kongera kohereza. Nta mafaranga yabitswe.') }],
+      end: true
+    };
+
+    d.ld_loan = {
+      head: T('LOAN REQUEST', 'GUSABA INGUZANYO'),
+      body: [
+        { t: memberName(item.mid) + ' · ' + F(item.amt || 0) + ' RWF @ ' + (item.rate || 5) + '%' },
+        { t: T('Savings: ', 'Ubwizigame: ') + F((MEM[item.mid] || {}).sav || 0) },
+        { t: T('Existing loan: ', 'Umwenda asanzwe: ') + F((MEM[item.mid] || {}).loan || 0) },
+        { t: T('Requested by ', 'Byasabwe na ') + (P[item.by] ? P[item.by].name.split(' ')[0] : '') }
+      ],
+      opts: [
+        { k: '1', label: T('Approve', 'Emeza'), go() {
+            if (MEM[item.mid]) MEM[item.mid].loan = (MEM[item.mid].loan || 0) + (item.amt || 0);
+            this.setState(s => ({ pending: s.pending.filter(p => p.id !== s.ctx.pid) }));
+            this.sms(T('Loan of ', 'Inguzanyo ya ') + F(item.amt || 0) + T(' RWF approved for ', ' RWF yemerewe ') + memberName(item.mid) + ' @ ' + (item.rate || 5) + '%. ' + T('Repay by 04 Nov.', 'Kwishyura bitarenze 04/11.'));
+            this.go('ld_loan_ok', false);
+          } },
+        { k: '2', label: T('Reject', 'Anga'), go() { this.setState(s => ({ pending: s.pending.filter(p => p.id !== s.ctx.pid) })); this.go('ld_dep_no_ok', false); } }
+      ],
+      foot: T('Amounts in RWF · 0 Back', 'Mu RWF · 0 Subira inyuma')
+    };
+    d.ld_loan_ok = {
+      head: T('LOAN APPROVED', 'INGUZANYO YEMEJWE') + ' \u2713',
+      body: [
+        { t: F(item.amt || 0) + ' RWF \u2192 ' + memberName(item.mid) },
+        { t: T('Treasurer told to release cash.', 'Umubitsi yabwiwe gutanga amafaranga.') },
+        { t: T('SMS sent to member and treasurer.', 'SMS yoherejwe ku munyamuryango n’umubitsi.') }
+      ],
+      end: true
+    };
+
+    d.ld_report = {
+      head: T('GROUP REPORT · Aug', 'RAPORO · Kanama'),
+      body: [
+        { t: T('Savings total: ', 'Ubwizigame bwose: ') + F(S.groupTotal) },
+        { t: T('Loans out:     ', 'Inguzanyo zatanzwe: ') + F(IDS.reduce((a, i) => a + MEM[i].loan, 0)) },
+        { t: T('Members:       ', 'Abanyamuryango: ') + nMem },
+        { t: T('Contribution:  ', 'Umusanzu: ') + F(S.contribution) },
+        { t: T('Cycle ends 20 Dec', 'Igihembwe kirangira 20/12') }
+      ],
+      foot: T('Amounts in RWF · 0 Back', 'Mu RWF · 0 Subira inyuma')
+    };
+
+    d.ld_chg = {
+      head: T('CONTRIBUTION AMOUNT', 'UMUSANZU'),
+      body: [{ t: T('Current: ', 'Ubu ni: ') + F(S.contribution) + ' RWF' }],
+      opts: [{ k: '1', label: T('Change it', 'Guhindura'), go() { this.go('ld_chg_amt'); } }],
+      foot: T('0 Back', '0 Subira inyuma')
+    };
+    d.ld_chg_amt = {
+      head: T('NEW AMOUNT', 'UMUSANZU MUSHYA'),
+      input: {
+        prompt: T('New contribution (RWF):', 'Umusanzu mushya (RWF):'),
+        on(v) { const a = parseInt(v.replace(/\D/g, ''), 10); if (!a) return T('Enter a number.', 'Injiza umubare.'); this.setState({ ctx: { amt: a } }); this.go('ld_chg_ok', false); }
+      }
+    };
+    d.ld_chg_ok = {
+      head: T('SENT FOR APPROVAL', 'BYOHEREJWE KWEMEZWA'),
+      body: [
+        { t: F(S.contribution) + ' \u2192 ' + F(S.ctx.amt || 0) + ' RWF' },
+        { t: T('A different admin must approve. Every member gets an SMS when it takes effect.', 'Undi muyobozi agomba kwemeza. Buri munyamuryango azabona SMS.') }
+      ],
+      end: true
+    };
+
+    /* ---------- MEMBER ---------- */
+    d.mb_main = {
+      head: T('GANZA · Fabrice', 'GANZA · Fabrice'),
+      body: [{ t: 'Twiteze Imbere · ' + T('member 05', 'umunyamuryango 05') }],
+      opts: [
+        { k: '1', label: T('My savings', 'Ubwizigame bwanjye'), go() { this.setState({ ctx: { after: 'mb_sav' } }); this.go(S.pinOk ? 'mb_sav' : 'mb_pin'); } },
+        { k: '2', label: T('My loan', 'Inguzanyo yanjye'), go() { this.setState({ ctx: { after: 'mb_loan' } }); this.go(S.pinOk ? 'mb_loan' : 'mb_pin'); } },
+        { k: '3', label: T('Transaction history', 'Ibyakozwe'), go() { this.go('mb_hist'); } },
+        { k: '4', label: T('Report a problem', 'Gutanga ikibazo'), go() { this.go('mb_prob'); } }
+      ],
+      back: false
+    };
+    d.mb_pin = {
+      head: T('PIN REQUIRED', 'PIN ISABWA'),
+      body: [{ t: T('Balances are private.', 'Amafaranga ni ibanga.') }],
+      input: {
+        prompt: T('Enter your PIN:', 'Injiza PIN yawe:'), mask: true,
+        on(v) { if (v !== '1234') return T('Wrong PIN.', 'PIN itari yo.'); this.setState({ pinOk: true }); this.go(S.ctx.after || 'mb_sav', false); }
+      },
+      foot: T('Demo PIN: 1234', 'PIN y’igerageza: 1234')
+    };
+    d.mb_sav = {
+      head: T('MY SAVINGS', 'UBWIZIGAME BWANJYE'),
+      body: [
+        { t: F(MEM['05'].sav) + ' RWF' },
+        { t: T('11 contributions this cycle', 'Imisanzu 11 muri iki gihembwe') },
+        { t: T('Last: 10,000 on 28 Jul', 'Uheruka: 10,000 ku 28/07') },
+        { t: T('Share of group: 6%', 'Igice cyawe: 6%') }
+      ],
+      foot: T('0 Back · 00 Main', '0 Subira · 00 Menu')
+    };
+    d.mb_loan = {
+      head: T('MY LOAN', 'INGUZANYO YANJYE'),
+      body: [{ t: T('You have no active loan.', 'Nta nguzanyo ufite.') }, { t: T('You may borrow up to ', 'Ushobora gusaba kugera kuri ') + F(MEM['05'].sav * 3) + ' RWF' }, { t: T('Ask the treasurer at the meeting.', 'Baza umubitsi mu nama.') }],
+      foot: T('0 Back · 00 Main', '0 Subira · 00 Menu')
+    };
+    d.mb_hist = {
+      head: T('HISTORY · last 5', 'IBYAKOZWE · 5 biheruka'),
+      body: [
+        { t: '28/07  +10,000  ' + T('contribution', 'umusanzu') },
+        { t: '21/07  +10,000  ' + T('contribution', 'umusanzu') },
+        { t: '14/07  +10,000  ' + T('contribution', 'umusanzu') },
+        { t: '07/07  +12,000  ' + T('contrib. + fine', 'umusanzu + amande') },
+        { t: '30/06  +10,000  ' + T('contribution', 'umusanzu') }
+      ],
+      foot: T('RWF · 99 More · 0 Back', 'RWF · 99 Ibindi · 0 Subira')
+    };
+    d.mb_prob = {
+      head: T('REPORT A PROBLEM', 'GUTANGA IKIBAZO'),
+      opts: [
+        { k: '1', label: T('An amount is wrong', 'Amafaranga ntariyo'), go() { this.go('mb_prob_ok', false); } },
+        { k: '2', label: T('My payment is missing', 'Ubwishyu bwanjye ntibubonetse'), go() { this.go('mb_prob_ok', false); } },
+        { k: '3', label: T('Something else', 'Ikindi'), go() { this.go('mb_prob_ok', false); } }
+      ],
+      foot: T('0 Back', '0 Subira inyuma')
+    };
+    d.mb_prob_ok = {
+      head: T('SENT', 'BYOHEREJWE') + ' \u2713',
+      body: [{ t: T('Vedaste (President) and Yvette (Secretary) have it. They will answer at the meeting on 04 Aug.', 'Vedaste (Perezida) na Yvette (Umunyamabanga) babibonye. Bazasubiza mu nama yo ku 04 Kanama.') }],
+      end: true
+    };
+
+    /* ---------- GUEST ---------- */
+    d.gs_main = {
+      head: 'GANZA',
+      body: [{ t: T('This number is not in a group yet.', 'Iyi nimero ntiri mu kimina.') }],
+      opts: [
+        { k: '1', label: T('Create an ikimina', 'Kurema ikimina'), go() { this.go('gs_new_name'); } },
+        { k: '2', label: T('Join with a group code', 'Kwinjira ukoresheje kode'), go() { this.go('gs_join'); } },
+        { k: '3', label: T('How it works', 'Uko bikora'), go() { this.go('gs_help'); } }
+      ],
+      back: false
+    };
+    d.gs_new_name = {
+      head: T('NEW IKIMINA', 'IKIMINA GISHYA'),
+      body: [{ t: T('Press SEND for a demo name.', 'Kanda SEND ku izina ry’igerageza.') }],
+      input: { prompt: T('Group name:', 'Izina ry’ikimina:'), free: true, on(v) { this.setState({ ctx: { name: /[a-z]/i.test(v) ? v : 'Duterimbere' } }); this.go('gs_new_count'); } }
+    };
+    d.gs_new_count = {
+      head: (S.ctx.name || '') + ' · ' + T('size', 'ingano'),
+      input: { prompt: T('How many members?', 'Abanyamuryango bangahe?'), on(v) { const n = parseInt(v.replace(/\D/g, ''), 10); if (!n) return T('Enter a number.', 'Injiza umubare.'); this.setState({ ctx: Object.assign({}, S.ctx, { n }) }); this.go('gs_new_ok', false); } }
+    };
+    d.gs_new_ok = {
+      head: T('IKIMINA CREATED', 'IKIMINA CYAREMWE') + ' \u2713',
+      body: [
+        { t: (S.ctx.name || '') + ' · ' + (S.ctx.n || 0) + T(' members', ' banyamuryango') },
+        { t: T('Group code: ', 'Kode: ') + 'TW-4482' },
+        { t: T('You are the President. Dial ', 'Uri Perezida. Kanda ') + this.code + T(' again to add members and name a treasurer.', ' wongere kwinjiza abandi n’umubitsi.') }
+      ],
+      end: true
+    };
+    d.gs_join = {
+      head: T('JOIN A GROUP', 'KWINJIRA MU KIMINA'),
+      body: [{ t: T('Try TW-4482', 'Gerageza TW-4482') }],
+      input: { prompt: T('Group code:', 'Kode y’ikimina:'), free: true, on(v) { this.setState({ ctx: { code: v } }); this.go('gs_join_ok', false); } }
+    };
+    d.gs_join_ok = {
+      head: T('REQUEST SENT', 'BYOHEREJWE'),
+      body: [{ t: T('Twiteze Imbere found. The President must approve you before you appear on the list.', 'Twiteze Imbere cyabonetse. Perezida agomba kwemeza mbere yo kugaragara ku rutonde.') }],
+      end: true
+    };
+    d.gs_help = {
+      head: T('HOW GANZA WORKS', 'UKO GANZA IKORA'),
+      body: [
+        { t: T('1. The treasurer records each contribution at the meeting.', '1. Umubitsi yandika buri musanzu mu nama.') },
+        { t: T('2. Everyone gets an SMS receipt.', '2. Buri wese abona SMS.') },
+        { t: T('3. A leader approves the day\u2019s deposit.', '3. Umuyobozi yemeza ubwizigame.') },
+        { t: T('Support: 0788 000 100', 'Ubufasha: 0788 000 100') }
+      ],
+      end: true
+    };
+
+    return d;
+  }
+
+  record(id, amt) {
+    const total = this.collTotal + amt;
+    this.setState(s => ({ coll: s.coll.concat([{ id, amt }]), ctx: Object.assign({}, s.ctx, { id, amt }) }));
+    this.sms(this.T('Received ', 'Twakiriye ') + F(amt) + this.T(' RWF from ', ' RWF kuva kuri ') + MEM[id].n + ' (' + this.T('contribution 04 Aug', 'umusanzu 04/08') + '). ' + this.T('Group collected today: ', 'Byakusanyijwe uyu munsi: ') + F(total) + ' RWF. Ref TX' + (4000 + Math.floor(Math.random() * 5999)));
+    this.go('tr_coll_ok', false);
+  }
+
+  renderVals() {
+    const S = this.state;
+    const T = (a, b) => this.T(a, b);
+    const n = S.node ? this.defs()[S.node] : null;
+    const isInput = !!(n && n.input);
+    const awaits = !!(n && !n.end);
+    const opts = (n && n.opts ? n.opts : []).map(o => ({ k: o.k, label: o.label, press: () => { if (!S.loading) o.go.call(this); } }));
+    const body = (n && n.body ? n.body : []).slice();
+    if (isInput) body.push({ t: '' }, { t: n.input.prompt });
+    const foot = n ? (n.end ? T('End of session.', 'Igihe kirangiye.') : (n.foot || '')) : '';
+
+    const personas = Object.keys(P).map(k => ({
+      key: k, name: P[k].name, role: P[k].role[this.lang], num: P[k].num, on: S.persona === k,
+      note: k === 'treasurer' ? T('Records the money. Approves nothing.', 'Yandika amafaranga. Ntacyo yemeza.')
+        : k === 'president' ? T('Approves deposits and loans.', 'Yemeza ubwizigame n’inguzanyo.')
+        : k === 'secretary' ? T('Same powers as the President.', 'Ububasha bumwe na Perezida.')
+        : k === 'member' ? T('Sees only their own money.', 'Areba amafaranga ye gusa.')
+        : T('A number the system does not know.', 'Nimero sisitemu itazi.'),
+      press: () => this.setPersona(k)
+    }));
+
+    const ledger = [
+      { k: T('USSD code', 'Kode ya USSD'), v: this.code },
+      { k: T('SIM', 'SIM'), v: P[S.persona].num },
+      { k: T('Acting as', 'Ukora nka'), v: (S.acting ? T('Treasurer (', 'Umubitsi (') + P[S.persona].role[this.lang] + ')' : P[S.persona].role[this.lang]) },
+      { k: T('Collected today', 'Byakusanyijwe'), v: F(this.collTotal) + ' RWF' },
+      { k: T('Expenses', 'Ibiguzi'), v: F(this.expTotal) + ' RWF' },
+      { k: T('Waiting approval', 'Bitegereje kwemezwa'), v: String(S.pending.length) },
+      { k: T('Group savings', 'Ubwizigame'), v: F(S.groupTotal) + ' RWF' }
+    ];
+
+    const pad = PAD.map(([dg, sub]) => ({ d: dg, sub, press: () => { if (S.node) this.type(dg); } }));
+    const col = i => COL[i].map(j => pad[j]);
+
+    return {
+      intro: S.intro, startDemo: () => this.start(), reset: () => this.reset(),
+      introChips: [
+        { k: T('Collect in the meeting', 'Gukusanya mu nama'), c: 'var(--pri)' },
+        { k: T('Approve the deposit', 'Kwemeza ubwizigame'), c: 'var(--acc)' },
+        { k: T('SMS receipt', 'Inyemezabwishyu ya SMS'), c: 'var(--ok)' }
+      ],
+      segEn: SEG(this.lang === 'en'), segRw: SEG(this.lang === 'rw'),
+      segFeature: SEG(this.frame === 'feature'), segSmart: SEG(this.frame === 'smart'),
+      isEn: this.lang === 'en', isRw: this.lang === 'rw',
+      setEn: () => this.setState({ langOv: 'en' }), setRw: () => this.setState({ langOv: 'rw' }),
+      isSmart: this.frame === 'smart', isFeature: this.frame === 'feature',
+      setSmart: () => this.setState({ frameOv: 'smart' }), setFeature: () => this.setState({ frameOv: 'feature' }),
+      clock: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+      dialled: this.code,
+      simLabel: P[S.persona].num + ' · ' + P[S.persona].role[this.lang],
+      sessionOn: !!S.node || S.loading, sessionOff: !S.node && !S.loading,
+      loading: S.loading, ready: !S.loading && !!S.node,
+      loadingText: T('USSD code running…', 'USSD irakora…'),
+      head: n ? n.head : '', body, options: opts, foot, err: S.err,
+      awaitsReply: awaits,
+      replyView: n && n.input && n.input.mask ? '\u2022'.repeat(S.reply.length) : S.reply,
+      cancelLabel: n && n.end ? T('Close', 'Funga') : T('Cancel', 'Reka'),
+      sendLabel: T('Send', 'Ohereza'),
+      call: () => { if (!S.node && !S.loading) this.dial(); },
+      cancel: () => this.hangUp(),
+      sendReply: () => this.send(),
+      softLeft: S.node || S.loading ? (awaits ? T('Send', 'Ohereza') : T('Close', 'Funga')) : T('Call', 'Hamagara'),
+      softRight: S.node || S.loading ? (S.reply ? T('Clear', 'Siba') : T('End', 'Sohoka')) : T('Menu', 'Menu'),
+      softLeftPress: () => { if (!S.node && !S.loading) return this.dial(); if (n && n.end) return this.hangUp(); this.send(); },
+      softRightPress: () => { if (!S.node) return; if (S.reply) return this.setState(s => ({ reply: s.reply.slice(0, -1), err: '' })); this.hangUp(); },
+      hint: S.node || S.loading
+        ? (this.frame === 'feature'
+            ? T('Tap a line, or type and press the green key.', 'Kanda umurongo, cyangwa andika ukande urwatsi.')
+            : T('Tap a line, or type and press Send.', 'Kanda umurongo, cyangwa andika ukande Ohereza.'))
+        : (this.frame === 'feature'
+            ? T('Green key dials ', 'Urwatsi ruhamagara ') + this.code
+            : T('Press the call key to dial ', 'Kanda urwa guhamagara ') + this.code),
+      sms: S.sms,
+      okPress: () => { if (!S.node && !S.loading) return this.dial(); if (n && n.end) return this.hangUp(); this.send(); },
+      personas: personas.map(p => Object.assign({}, p, {
+        bd: p.on ? 'var(--pri)' : 'var(--line)',
+        bg: p.on ? 'var(--pribg)' : 'var(--card)',
+        fg: p.on ? 'var(--pri)' : 'var(--ink)'
+      })), ledger, pad, padCol1: col(0), padCol2: col(1), padCol3: col(2),
+      simInput: S.simInput, simFeedback: S.simFeedback,
+      onSim: e => this.setState({ simInput: e.target.value }),
+      applySim: () => this.applySim()
+    };
+  }
+}
+
+
+</script>
+</body></html>

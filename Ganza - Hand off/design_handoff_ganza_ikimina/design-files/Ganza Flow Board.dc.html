@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F7F6FB;--card:#FFFFFF;--ink:#232232;--sub:#6E6C7E;--line:rgba(35,34,50,.13);--chip:#EDECF4;--pri:#5A55D6;--priink:#F7F6FE;--pribg:#EDECFB;--acc:#D69A2D;--ok:#3F6B2E;--okbg:#E7EFDF;--red:#B3261E;--redbg:#F7E4E1;--amber:#8A6212;--amberbg:#F7EBD2}
+body{margin:0;background:var(--bg);font-family:'Figtree',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#5A55D6}a:hover{color:#403BB0}
+</style>
+</helmet>
+<div style="min-width:2200px;padding:56px 64px 80px">
+
+  <div style="display:flex;align-items:center;gap:16px">
+    <svg width="48" height="48" viewBox="60 40 440 480" aria-hidden="true"><path d="M 280 69 L 420 279 L 140 279 Z" fill="var(--ink)"></path><path d="M 128 303 L 432 303 L 376 491 L 184 491 Z" fill="var(--ink)"></path><path d="M 172 401 L 208 365 L 244 401 L 280 365 L 316 401 L 352 365 L 388 401" fill="none" stroke="var(--acc)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    <div>
+      <div style="font-family:'Archivo',sans-serif;font-size:38px;font-weight:700;letter-spacing:-.03em;line-height:1">Ganza · Flow board</div>
+      <div style="font-size:17px;color:var(--sub);font-weight:400;margin-top:8px">Every screen, who can reach it, and what needs approval</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:20px;margin-top:36px;flex-wrap:wrap">
+    <sc-for list="{{ legend }}" as="l" hint-placeholder-count="5">
+      <span style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:10px 18px;font-size:15px;font-weight:500">
+        <span style="width:12px;height:12px;border-radius:4px;background:{{ l.c }}"></span>{{ l.k }}
+      </span>
+    </sc-for>
+  </div>
+
+  <div style="display:flex;gap:28px;margin-top:44px;align-items:flex-start">
+    <sc-for list="{{ columns }}" as="col" hint-placeholder-count="6">
+      <div style="flex:none;width:{{ col.w }}">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+          <span style="width:30px;height:30px;border-radius:9px;background:{{ col.bg }};color:{{ col.fg }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums">{{ col.n }}</span>
+          <span style="font-size:13px;font-weight:600;color:var(--sub);letter-spacing:.09em;text-transform:uppercase">{{ col.title }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ col.nodes }}" as="nd" hint-placeholder-count="4">
+            <div style="background:var(--card);border:1px solid {{ nd.bd }};border-left:5px solid {{ nd.edge }};border-radius:14px;padding:18px 20px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+                <span style="font-size:17px;font-weight:600;line-height:1.3">{{ nd.name }}</span>
+                <sc-if value="{{ nd.tag }}" hint-placeholder-val="{{ false }}">
+                  <span style="flex:none;background:{{ nd.tagBg }};color:{{ nd.tagFg }};border-radius:99px;padding:5px 11px;font-size:12px;font-weight:600;white-space:nowrap">{{ nd.tag }}</span>
+                </sc-if>
+              </div>
+              <sc-if value="{{ nd.desc }}" hint-placeholder-val="{{ true }}">
+                <div style="font-size:14.5px;color:var(--sub);font-weight:400;line-height:1.5;margin-top:7px">{{ nd.desc }}</div>
+              </sc-if>
+              <sc-if value="{{ nd.roles }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap">
+                  <sc-for list="{{ nd.roleList }}" as="rl" hint-placeholder-count="2">
+                    <span style="background:{{ rl.bg }};color:{{ rl.fg }};border-radius:6px;padding:4px 9px;font-size:12px;font-weight:600">{{ rl.k }}</span>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="margin-top:64px">
+    <div style="font-size:13px;font-weight:600;color:var(--sub);letter-spacing:.09em;text-transform:uppercase;margin-bottom:18px">Approval rules</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <sc-for list="{{ rules }}" as="ru" hint-placeholder-count="6">
+        <div style="flex:none;width:320px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px">
+          <div style="font-size:17px;font-weight:600">{{ ru.k }}</div>
+          <div style="font-size:14.5px;color:var(--sub);font-weight:400;line-height:1.5;margin-top:7px">{{ ru.v }}</div>
+          <div style="display:inline-block;background:{{ ru.bg }};color:{{ ru.fg }};border-radius:99px;padding:6px 13px;font-size:12.5px;font-weight:600;margin-top:14px">{{ ru.n }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    var C = { tre: ["Treasurer", "var(--pribg)", "var(--pri)"], com: ["President/Secretary", "var(--amberbg)", "var(--amber)"], mem: ["Member", "var(--okbg)", "var(--ok)"] };
+    var mkRoles = function (keys) {
+      return keys.map(function (k) { return { k: C[k][0], bg: C[k][1], fg: C[k][2] }; });
+    };
+    var node = function (name, desc, roles, tag) {
+      var edge = roles.length === 3 ? "var(--line)" : roles[0] === "tre" ? "var(--pri)" : roles[0] === "com" ? "var(--amber)" : "var(--ok)";
+      return {
+        name: name, desc: desc || "", roles: roles.length ? true : false, roleList: mkRoles(roles),
+        tag: tag || "", tagBg: tag ? "var(--redbg)" : "transparent", tagFg: tag ? "var(--red)" : "transparent",
+        bd: "var(--line)", edge: edge
+      };
+    };
+    var columns = [
+      { n: "1", title: "Getting in", w: "300px", bg: "var(--chip)", fg: "var(--ink)", nodes: [
+        node("Tour · 3 screens", "Skippable. Shown once.", []),
+        node("Sign in / Sign up", "Phone + 4-digit PIN, or Google.", []),
+        node("PIN / fingerprint", "Four circles, biometric shortcut.", []),
+        node("Loading · Offline · Failed", "Saved on device, syncs later.", [])
+      ] },
+      { n: "2", title: "Home", w: "320px", bg: "var(--chip)", fg: "var(--ink)", nodes: [
+        node("Greeting + group switcher", "Quiet text row → bottom-sheet list of my ibimina.", ["tre", "com", "mem"]),
+        node("Sliding balance cards", "Group savings · To deposit · Loans out · At bank · My savings · Fines.", ["tre", "com"]),
+        node("My cards", "My savings · My loan · My attendance.", ["mem"]),
+        node("Quick actions ×4", "Role-specific. Treasurer leads with Add payment.", ["tre", "com", "mem"]),
+        node("My fines", "Own unpaid fines. Hidden when none.", ["tre", "com", "mem"]),
+        node("Recent · Group / Mine", "Committee can switch the list to their own transactions.", ["tre", "com"])
+      ] },
+      { n: "3", title: "Balance detail", w: "320px", bg: "var(--pribg)", fg: "var(--pri)", nodes: [
+        node("Group savings", "Total, meetings held / left, every member and their savings.", ["tre", "com"]),
+        node("Loans out", "Total, % of savings, who owes, whose term expired.", ["tre", "com"]),
+        node("At bank", "Deposits with approver + timestamp. Treasurer can balance the account.", ["tre", "com"]),
+        node("Balance difference", "Missed income · Calculation error · Late expense.", ["tre"], "1 or 2 approvals"),
+        node("Fines owed", "Who owes what → Mark paid, or Forgive.", ["tre", "com"], "Forgive: 1 approval")
+      ] },
+      { n: "4", title: "The meeting", w: "340px", bg: "var(--pribg)", fg: "var(--pri)", nodes: [
+        node("Meeting · today", "Collected today, then Add payment, then the roll-call.", ["tre", "com", "mem"]),
+        node("Tap a member", "500 · 1,000 · Other · Pay fine · Not yet · Absent.", ["tre"]),
+        node("Absent", "Confirm → with fine, or excused (no fine).", ["tre"]),
+        node("Record expense", "Name, amount, receipt from camera or gallery.", ["tre"], "1 approval"),
+        node("Minutes", "Text, up to 3 voice notes (5 min), 3 photos.", ["tre"], "1 approval"),
+        node("Meeting summary", "Collected, fines, expenses, money to deposit.", ["tre"]),
+        node("Deposit to bank", "Treasurer deposits, attaches receipt, marks it done.", ["tre"], "1 approval")
+      ] },
+      { n: "5", title: "People & money", w: "320px", bg: "var(--pribg)", fg: "var(--pri)", nodes: [
+        node("Members list", "Names only for members; committee sees balances.", ["tre", "com", "mem"]),
+        node("Member detail", "Saved · loan · attendance, then Contributions / Loans timeline.", ["tre", "com"]),
+        node("Add member", "Invite link · one-time USSD code · manual with ID + signature.", ["tre"], "1 approval"),
+        node("Remove member", "Started by any committee member.", ["tre", "com"], "1 approval"),
+        node("Add payment", "Member → type → amount.", ["tre"]),
+        node("Offer loan", "Member, amount, 1/2/3 months, deadline date.", ["tre"], "1 approval"),
+        node("Request loan", "Amount + term, sent to the committee.", ["mem"], "1 approval")
+      ] },
+      { n: "6", title: "Oversight", w: "320px", bg: "var(--amberbg)", fg: "var(--amber)", nodes: [
+        node("Approvals", "Confirm dialog on every decision. Receipts open full-screen.", ["tre", "com"]),
+        node("Decided", "Kept with who decided and when.", ["tre", "com"]),
+        node("Act as treasurer", "President or secretary stands in while the treasurer is away.", ["com"], "1 approval"),
+        node("Past meetings", "Date as title, expand for totals, attendance, minutes, media.", ["tre", "com", "mem"]),
+        node("Analytics", "All my groups, streak, savings growth, consistency, repayment, attendance.", ["tre", "com", "mem"]),
+        node("Export PDF", "Statement with logo, QR, period and line items.", ["tre", "com", "mem"], "Group sheet: 1 approval")
+      ] },
+      { n: "7", title: "Settings & states", w: "320px", bg: "var(--chip)", fg: "var(--ink)", nodes: [
+        node("My profile", "Change phone or email.", ["tre", "com", "mem"]),
+        node("Ikimina settings", "Share, fines, loan interest, cycle, bank account, committee, rules.", ["tre", "com", "mem"]),
+        node("Propose a rule change", "", ["tre", "com"], "2 committee + 3 members"),
+        node("Dissolve the ikimina", "Share out and close.", ["tre", "com"], "Majority vote"),
+        node("App settings", "Language, dark mode, fingerprint.", ["tre", "com", "mem"]),
+        node("Help", "Text, voice note, attachment, or call 2552.", ["tre", "com", "mem"]),
+        node("Offline · Failed · Empty · Closed", "Calm, reassuring states with one clear way out.", [])
+      ] }
+    ];
+    var rules = [
+      { k: "One committee member", v: "Deposits, expenses, loans, minutes, member add/remove, fine forgiveness, group export.", n: "1 approval", bg: "var(--pribg)", fg: "var(--pri)" },
+      { k: "Both committee members", v: "A late expense used to explain a bank difference.", n: "2 approvals", bg: "var(--amberbg)", fg: "var(--amber)" },
+      { k: "Committee + members", v: "Changing the rules of the ikimina.", n: "2 committee + 3 members", bg: "var(--amberbg)", fg: "var(--amber)" },
+      { k: "Majority vote", v: "Dissolving the ikimina and sharing out.", n: "More than half", bg: "var(--redbg)", fg: "var(--red)" },
+      { k: "SMS code", v: "A member exporting their own statement.", n: "Self-confirmed", bg: "var(--okbg)", fg: "var(--ok)" },
+      { k: "No approval", v: "Recording contributions, attendance, and everything a member reads.", n: "Immediate", bg: "var(--chip)", fg: "var(--sub)" }
+    ];
+    return {
+      columns: columns, rules: rules,
+      legend: [
+        { k: "Treasurer", c: "var(--pri)" },
+        { k: "President / Secretary", c: "var(--amber)" },
+        { k: "Member", c: "var(--ok)" },
+        { k: "Everyone", c: "var(--line)" },
+        { k: "Needs approval", c: "var(--red)" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
