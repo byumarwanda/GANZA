@@ -5,10 +5,17 @@
    colour, which is how the design was drawn and reviewed. */
 
 #root {
+  min-height: 100dvh;
+}
+
+/* Only the app route centres a fixed column; the submission page and the USSD
+   demo are ordinary scrolling pages. */
+.app-shell {
   height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--desk);
 }
 
 .phone {

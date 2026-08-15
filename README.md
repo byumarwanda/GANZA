@@ -6,8 +6,18 @@ and repaid, and the treasurer takes the cash to the bank. Ganza records the same
 order, keeps a running balance every member can see, and requires a second signature — an approval,
 or a group vote — before money or rules move.
 
-The app is in `app/`. It is built to the design handoff in `Ganza - Hand off/`, which stays in the
-repository as the reference.
+**Live: <https://byumarwanda.github.io/GANZA/>**
+
+The submission has three ways in, and the site's front page offers all three:
+
+| | What it is | Where |
+|---|---|---|
+| **Pitch deck** | The problem, the users, the payment flow. | `pitch-deck.html` |
+| **USSD demo** | The whole product on a feature phone, over `*384*48293#`. Four pathways, routed by SIM. | `#/ussd` · built from `00-CORE.md` and the four pathway specs |
+| **Mobile app** | The same logbook with room to breathe. Installs to the home screen, works offline. | `#/app` · built from `Ganza - Hand off/` |
+
+Everything lives in `app/`. The design handoff and the USSD specs stay in the repository as the
+reference they were built from.
 
 ---
 
@@ -46,7 +56,8 @@ Then download this code and run it:
    ```
 
 6. The last line prints a web address like `http://localhost:5173/`. Open it in your browser.
-7. Sign in with **any phone number** and **any four digits**. There is no real account yet.
+7. You land on the submission page. The USSD demo needs no sign-in; the app takes **any phone
+   number** and **any four digits**.
 
 To stop it, click the Terminal window and press `Ctrl + C`.
 
@@ -81,6 +92,27 @@ Two questions need a person, not a programmer:
 ---
 
 ## What is built
+
+### The USSD demo
+
+Every screen in `00-CORE.md`, `01-TREASURER.md`, `02-PRESIDENT-SECRETARY.md`, `03-MEMBER.md` and
+`04-UNREGISTERED.md` — 55 nodes, in English and Kinyarwanda. Node ids match the specs exactly
+(`tr_coll_amt`, `ld_dep`, `mb_sav`…), so a spec line traces to code.
+
+- **Routed by SIM, never by a menu.** Pick a number on the demo page and dial; the menu you get
+  follows the phone. A member is never asked who they are.
+- **The treasurer's hot path** — id, amount, confirm, next — about four keypresses a member, with a
+  running `n/8` counter so a timed-out session can be resumed without losing her place.
+- **Nobody approves their own submission.** The leader's queue is filtered by submitter, so a
+  president who submitted a deposit while acting as treasurer sees `Waiting for you: 0`.
+- **The money rules** are enforced and tested: the 3× loan ceiling, no second loan while one is
+  open, no payment above the balance, no removal with an open loan, one contribution per member per
+  meeting.
+- **The screen budget is visible.** Each screen reports its size against the 182 bytes a carrier
+  will actually send. `app/src/ussd/budget.ts` measures it and a test holds every screen inside it,
+  in both languages.
+
+### The mobile app
 
 Every screen in the design handoff, at the measurements the handoff specifies.
 
@@ -148,7 +180,10 @@ approximated through a component library's defaults.
 
 ```
 app/src/
-  lib/        design tokens' companions — strings, group data, rules, storage, the offline outbox
+  Root.tsx    hash router: the submission page, the USSD demo, the app
+  Landing.tsx the submission front door
+  ussd/       the USSD demo — data, the 55-node map, the session engine, the handset
+  lib/        strings, group data, money rules, storage, the offline outbox
   state/      one context holding app state and the shared actions
   components/ the repeating recipes: cards, buttons, pills, sheets, icons
   screens/    the four tabs
@@ -156,8 +191,22 @@ app/src/
   styles/     colour tokens, typography, the two scroll surfaces
 ```
 
-`app/src/lib/rules.ts` holds the arithmetic and the voting thresholds, apart from the UI, so they
-can be checked on their own — `app/src/lib/rules.test.ts` covers them.
+`app/src/lib/rules.ts` holds the app's arithmetic and voting thresholds, and `app/src/ussd/nodes.ts`
+holds the USSD node map — both apart from the UI, so they can be checked on their own.
+`rules.test.ts` and `ussd/nodes.test.ts` cover them.
+
+Three places where the specs contradict themselves, resolved in favour of the rule rather than the
+illustration, and each noted in a comment at the point of the change:
+
+- The settings-vote warning and the dissolve threshold read "half the members" in the mobile
+  prototype, against `DEVELOPER.md` §5.2, `BEHAVIOR.md` §3 and the footnote on the same screen.
+  Both now say two-thirds.
+- `02-PRESIDENT-SECRETARY.md` prints `RWF` on every approval-queue row, which overruns the
+  26-character line `00-CORE.md` §2 sets. The queue now follows the dense-list rule the core spec
+  states for exactly this case: no unit on the row, unit in the footer.
+- `00-CORE.md` §2 calls 7 lines "hard", but several of the specs' own screens run to eight or nine
+  once wrapped — `tr_main` is nine. The enforced limit is therefore the 182 bytes a carrier will
+  send; the line count is reported next to the demo as a target.
 
 Two notes on the port:
 
