@@ -39,8 +39,14 @@ jobs:
         run: npm run build
         env:
           BASE_PATH: /GANZA/
+      # `enablement: true` switches Pages to publishing this workflow's output.
+      # Without it, a repository left on "Deploy from a branch" keeps running the
+      # legacy Jekyll builder alongside this job — and Jekyll serves README.md as
+      # the home page, so whichever of the two finishes last wins.
       - uses: actions/configure-pages@v5
         if: github.ref == 'refs/heads/main'
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/main'
         with:
