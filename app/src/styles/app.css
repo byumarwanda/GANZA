@@ -1,0 +1,36 @@
+/* The app column.
+   On a phone it fills the screen — the OS supplies the status bar, so the
+   prototype's mock one is not reproduced here; the safe-area inset takes its
+   place. On a wider screen the same 390px column is centred against the desk
+   colour, which is how the design was drawn and reviewed. */
+
+#root {
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phone {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  max-width: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  padding-top: env(safe-area-inset-top);
+}
+
+@media (min-width: 460px) and (min-height: 700px) {
+  .phone {
+    width: 390px;
+    height: 844px;
+    max-height: 100dvh;
+    border-radius: 44px;
+    box-shadow: 0 30px 80px rgba(28, 28, 42, 0.32), 0 0 0 10px #22222e, 0 0 0 12px #43435a;
+  }
+}
+
+/* Some fields in this design are 15px, below iOS Safari's 16px threshold, so
+   focusing them would zoom the page. The viewport meta pins the scale instead —
+   the type sizes are fixed by the spec and must not be inflated to work around it. */
