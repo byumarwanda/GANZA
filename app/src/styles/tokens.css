@@ -104,8 +104,6 @@ body {
   line-height: 1.45;
   letter-spacing: 0;
   color: var(--ink);
-  /* The app owns its own scrolling; the document never scrolls. */
-  overflow: hidden;
   overscroll-behavior: none;
 }
 

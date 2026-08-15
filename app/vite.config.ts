@@ -20,7 +20,9 @@ export default defineConfig({
         short_name: 'Ganza',
         description: "Your ikimina, on your phone",
         lang: 'en',
-        start_url: base,
+        // Installing from the home screen should land in the app, not on the
+        // submission page the judges read.
+        start_url: base + '#/app',
         scope: base,
         display: 'standalone',
         orientation: 'portrait',
