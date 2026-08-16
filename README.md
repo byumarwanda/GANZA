@@ -13,13 +13,20 @@ three ways in, and every page after it keeps a **Welcome** tab so there is alway
 
 | | What it is | Where |
 |---|---|---|
-| **Pitch deck** | The problem, the users, the payment flow. | `#/deck` · `Ganza Pitch Two Pager.pdf` |
+| **Pitch deck** | The problem, the users, the payment flow. | `#/deck` · `Ganza Two Pager (offline).html`, with `Ganza Pitch Two Pager.pdf` alongside |
 | **USSD demo** | The whole product on a feature phone, over `*384*48293#`. Four pathways, routed by SIM. | `#/ussd` · built from `00-CORE.md` and the four pathway specs |
 | **Mobile app** | The same logbook with room to breathe. Installs to the home screen, works offline. | `#/app` · built from `Ganza - Hand off/` |
 
 On a laptop the demo and the app open in a two-part workbench: the phone sits fixed on the left, at
 a size that fits the window without the page ever scrolling, and the notes sit quietly on the right
 inside dropdowns that stay closed until they are wanted.
+
+The deck is shown as a page, not as a document in a viewer: the HTML two-pager renders under the
+same top bar as everything else, as real text in its own fonts, with no toolbar or thumbnail rail
+around it. The PDF is one tap away for anyone who wants the file. Both are copied into
+`app/public/`, so the deck is part of the build rather than a loose file beside it — update the deck
+by replacing `Ganza Two Pager (offline).html` at the repository root and copying it to
+`app/public/Ganza Two Pager.html`.
 
 Everything lives in `app/`. The design handoff and the USSD specs stay in the repository as the
 reference they were built from.
