@@ -1,40 +1,27 @@
 /* The app column.
    On a phone it fills the screen — the OS supplies the status bar, so the
    prototype's mock one is not reproduced here; the safe-area inset takes its
-   place. On a wider screen the same 390px column is centred against the desk
-   colour, which is how the design was drawn and reviewed. */
+   place. Inside the workbench it fills the fixed 390 × 844 frame it is scaled
+   into, so the design's pixel measurements never change. */
 
 #root {
   min-height: 100dvh;
 }
 
-/* Only the app route centres a fixed column; the submission page and the USSD
-   demo are ordinary scrolling pages. */
-.app-shell {
-  height: 100dvh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--desk);
-}
-
 .phone {
   position: relative;
   width: 100%;
-  height: 100dvh;
-  max-width: 100%;
+  height: 100%;
+  min-height: 100%;
   overflow: hidden;
   background: var(--bg);
-  padding-top: env(safe-area-inset-top);
 }
 
-@media (min-width: 460px) and (min-height: 700px) {
+/* Standalone (installed to a home screen) there is no frame around it. */
+@media (display-mode: standalone) {
   .phone {
-    width: 390px;
-    height: 844px;
-    max-height: 100dvh;
-    border-radius: 44px;
-    box-shadow: 0 30px 80px rgba(28, 28, 42, 0.32), 0 0 0 10px #22222e, 0 0 0 12px #43435a;
+    height: 100dvh;
+    padding-top: env(safe-area-inset-top);
   }
 }
 

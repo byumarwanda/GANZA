@@ -51,6 +51,8 @@ export interface UssdState {
   ctx: Record<string, string | number | undefined>
   page: number
   sms: Sms | null
+  /** Recent receipts, newest first. */
+  smsLog: Sms[]
   members: Record<string, Member>
   pending: Pending[]
   groupTotal: number

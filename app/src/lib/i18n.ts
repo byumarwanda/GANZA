@@ -130,6 +130,8 @@ export const T = {
     notifDeposit: 'Group money deposited at bank',
     // Used by the expense form's name field, which the prototype left unlabelled.
     expenseName: 'What was it for?',
+    payAtMeeting: 'Pay the treasurer at the next meeting.',
+    noFines: 'You owe nothing.',
   },
   rw: {
     signIn: 'Injira', signUp: 'Iyandikishe', skip: 'Simbuka', tourStart: 'Tangira',
@@ -262,6 +264,8 @@ export const T = {
     notifContrib: 'Umusanzu wakiriwe · 2,000 RWF', notifLoanOk: 'Inguzanyo yawe yemejwe',
     notifDeposit: "Amafaranga y'itsinda yabikijwe kuri banki",
     expenseName: 'Cyari icyiki?',
+    payAtMeeting: 'Ishyura umubitsi mu nama itaha.',
+    noFines: 'Nta mande ufite.',
   },
 } as const
 

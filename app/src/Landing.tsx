@@ -1,161 +1,194 @@
 import { Logo } from './components/icons'
 
-/** The submission front door: three ways into the same product. */
-const ENTRIES = [
+const CARDS = [
   {
-    key: 'deck',
-    kicker: 'The case',
+    href: '#/deck',
+    kicker: 'Two pages',
     title: 'Pitch deck',
-    body: 'The problem, the users, the payment flow, and why an ikimina needs this. Start here if you have five minutes.',
-    action: 'Open the deck',
-    href: 'pitch-deck.html',
-    external: true,
+    body: 'The problem, the flow, the business model.',
     icon: 'deck' as const,
   },
   {
-    key: 'ussd',
-    kicker: 'Every phone',
-    title: 'USSD demo',
-    body: 'The whole product on a feature phone, over *384*48293#. Four pathways, routed by SIM: treasurer, president, member, and a number we do not know yet.',
-    action: 'Dial the demo',
     href: '#/ussd',
-    external: false,
+    kicker: 'Any phone',
+    title: 'USSD demo',
+    body: 'Dial *384*48293# and try it. No internet needed.',
     icon: 'ussd' as const,
   },
   {
-    key: 'app',
+    href: '#/app',
     kicker: 'Smartphones',
     title: 'Mobile app',
-    body: 'The same logbook with room to breathe: the meeting roll-call, approvals, statements and analytics. Installs to the home screen and works with no signal.',
-    action: 'Open the app',
-    href: '#/app',
-    external: false,
+    body: 'The same book, with more room.',
     icon: 'app' as const,
   },
+]
+
+const FACTS = [
+  ['The ritual stays', 'Meet. Contribute. Discuss. Decide.'],
+  ['The friction goes', 'No counting, totalling or reconciling by hand.'],
+  ['Your phone number decides', 'What you see depends on who you are in the group.'],
 ]
 
 export default function Landing() {
   return (
     <div style={{ minHeight: '100dvh', background: 'var(--bg)', overflowY: 'auto' }}>
-      <div style={{ maxWidth: 1040, margin: '0 auto', padding: '48px 24px 64px' }}>
-        <header style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-          <Logo size={72} />
-          <div
+      <div style={{ maxWidth: 940, margin: '0 auto', padding: '72px 24px 80px' }}>
+
+        <header style={{ textAlign: 'center' }}>
+          <Logo size={64} />
+          <h1
             style={{
-              fontFamily: "'Archivo',sans-serif", fontSize: 40, fontWeight: 700, lineHeight: 1,
-              letterSpacing: '-.03em', marginTop: 18,
+              fontFamily: "'Archivo',sans-serif", fontSize: 'clamp(34px, 6vw, 52px)', fontWeight: 700,
+              lineHeight: 1, letterSpacing: '-.03em', margin: '24px 0 0',
             }}
           >
             Ganza
-          </div>
-          <div
-            style={{
-              fontSize: 13, color: 'var(--sub)', fontWeight: 500, letterSpacing: '.14em',
-              textTransform: 'uppercase', marginTop: 10,
-            }}
-          >
-            BNR Fintech Competition · Submission
-          </div>
+          </h1>
           <p
             style={{
-              fontSize: 17, color: 'var(--sub)', lineHeight: 1.55, maxWidth: 560, marginTop: 22,
-              textWrap: 'pretty',
+              fontSize: 'clamp(19px, 2.6vw, 24px)', lineHeight: 1.35, letterSpacing: '-.015em',
+              margin: '20px auto 0', maxWidth: 480, textWrap: 'balance',
             }}
           >
-            Ganza replaces the paper logbook a Rwandan <strong style={{ color: 'var(--ink)', fontWeight: 600 }}>ikimina</strong> keeps.
-            Every contribution, fine, loan and deposit is recorded in the order the meeting already
-            happens — and nothing moves on one person's say-so.
+            The ikimina notebook, on any phone.
+          </p>
+          <p style={{ fontSize: 17, color: 'var(--sub)', margin: '12px 0 0' }}>
+            We never hold your money.
+          </p>
+          <p
+            style={{
+              fontSize: 13, color: 'var(--sub)', fontWeight: 500, letterSpacing: '.12em',
+              textTransform: 'uppercase', margin: '32px 0 0',
+            }}
+          >
+            FinTech Innovation Hackathon 2026
           </p>
         </header>
 
-        <div
+        {/* One line of problem, in the group's own words. */}
+        <p
           style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: 18, marginTop: 44,
+            fontSize: 'clamp(17px, 2.2vw, 21px)', lineHeight: 1.5, textAlign: 'center',
+            margin: '72px auto 0', maxWidth: 520, textWrap: 'balance',
           }}
         >
-          {ENTRIES.map((e) => (
+          Rwandans already save together.{' '}
+          <span style={{ color: 'var(--sub)' }}>The writing down is what breaks.</span>
+        </p>
+
+        <div
+          style={{
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: 32, margin: '56px 0 0',
+          }}
+        >
+          {FACTS.map(([head, body]) => (
+            <div key={head}>
+              <div style={{ fontSize: 17, fontWeight: 600, marginBottom: 8 }}>{head}</div>
+              <div style={{ fontSize: 15, color: 'var(--sub)', lineHeight: 1.6, textWrap: 'pretty' }}>{body}</div>
+            </div>
+          ))}
+        </div>
+
+        <hr style={{ border: 0, borderTop: '1px solid var(--line)', margin: '72px 0 0' }} />
+
+        <div
+          style={{
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: 20, margin: '56px 0 0',
+          }}
+        >
+          {CARDS.map((c) => (
             <a
-              key={e.key}
-              href={e.href}
-              {...(e.external ? { target: '_blank', rel: 'noreferrer' } : {})}
+              key={c.href}
+              href={c.href}
               style={{
-                display: 'flex', flexDirection: 'column', background: 'var(--card)', borderRadius: 18,
-                border: '1px solid var(--line)', padding: 24, textDecoration: 'none', color: 'var(--ink)',
-                minHeight: 300,
+                display: 'flex', flexDirection: 'column', background: 'var(--card)', borderRadius: 20,
+                border: '1px solid var(--line)', padding: 28, textDecoration: 'none', color: 'var(--ink)',
               }}
             >
-              <Art kind={e.icon} />
+              <Art kind={c.icon} />
               <div
                 style={{
                   fontSize: 13, fontWeight: 600, color: 'var(--sub)', letterSpacing: '.08em',
-                  textTransform: 'uppercase', marginTop: 20,
+                  textTransform: 'uppercase', marginTop: 28,
                 }}
               >
-                {e.kicker}
+                {c.kicker}
               </div>
-              <div style={{ fontSize: 21, fontWeight: 600, letterSpacing: '-.015em', marginTop: 6 }}>{e.title}</div>
-              <p
-                style={{
-                  fontSize: 15, color: 'var(--sub)', lineHeight: 1.55, marginTop: 10, flex: 1,
-                  textWrap: 'pretty',
-                }}
-              >
-                {e.body}
+              <div style={{ fontSize: 21, fontWeight: 600, letterSpacing: '-.015em', marginTop: 8 }}>{c.title}</div>
+              <p style={{ fontSize: 15, color: 'var(--sub)', lineHeight: 1.6, margin: '10px 0 0', flex: 1, textWrap: 'pretty' }}>
+                {c.body}
               </p>
               <span
                 style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 18, height: 48,
-                  borderRadius: 14, background: 'var(--pri)', color: 'var(--priink)', fontSize: 17,
-                  fontWeight: 600, justifyContent: 'center',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 28, height: 50,
+                  borderRadius: 14, background: 'var(--pri)', color: 'var(--priink)', fontSize: 17, fontWeight: 600,
                 }}
               >
-                {e.action}
-                <span aria-hidden="true">→</span>
+                Open
               </span>
             </a>
           ))}
         </div>
 
-        <footer
+        {/* The one promise the whole product rests on. */}
+        <p
           style={{
-            marginTop: 48, textAlign: 'center', fontSize: 13, color: 'var(--sub)', lineHeight: 1.6,
+            fontSize: 'clamp(17px, 2.2vw, 21px)', lineHeight: 1.5, textAlign: 'center',
+            margin: '80px auto 0', maxWidth: 560, textWrap: 'balance',
           }}
         >
-          The USSD demo and the app both run on sample data and hold no real money.
-          Kinyarwanda copy is drafted and awaits a native-speaker review.
+          One person writes it.{' '}
+          <span style={{ color: 'var(--sub)' }}>Another checks it.</span>
+        </p>
+
+        <footer
+          style={{
+            marginTop: 56, textAlign: 'center', fontSize: 13, color: 'var(--sub)', lineHeight: 1.7,
+          }}
+        >
+          Sample data. No real money moves.
         </footer>
       </div>
     </div>
   )
 }
 
-/** A small drawing per entry, in the brand's own shapes rather than stock icons. */
+/** A small drawing per card, in the brand's own shapes rather than stock icons. */
 function Art({ kind }: { kind: 'deck' | 'ussd' | 'app' }) {
-  const common = { width: 96, height: 72 } as const
+  const common = { width: 84, height: 64 } as const
 
   if (kind === 'deck') {
     return (
-      <svg {...common} viewBox="0 0 96 72" aria-hidden="true">
-        <rect x="4" y="8" width="72" height="52" rx="8" fill="var(--pribg)" />
-        <rect x="20" y="12" width="72" height="52" rx="8" fill="var(--pri)" />
-        <rect x="32" y="26" width="34" height="6" rx="3" fill="var(--priink)" opacity=".9" />
-        <rect x="32" y="38" width="48" height="6" rx="3" fill="var(--priink)" opacity=".5" />
-        <circle cx="80" cy="20" r="7" fill="var(--acc)" />
+      <svg {...common} viewBox="0 0 84 64" aria-hidden="true">
+        <rect x="2" y="6" width="60" height="46" rx="7" fill="var(--pribg)" />
+        <rect x="18" y="10" width="60" height="46" rx="7" fill="var(--pri)" />
+        <rect x="28" y="22" width="28" height="5" rx="2.5" fill="var(--priink)" opacity=".9" />
+        <rect x="28" y="33" width="40" height="5" rx="2.5" fill="var(--priink)" opacity=".5" />
+        <circle cx="68" cy="18" r="6" fill="var(--acc)" />
       </svg>
     )
   }
 
   if (kind === 'ussd') {
     return (
-      <svg {...common} viewBox="0 0 96 72" aria-hidden="true">
-        <rect x="26" y="2" width="44" height="68" rx="8" fill="var(--pribg)" />
-        <rect x="32" y="10" width="32" height="20" rx="4" fill="var(--card)" />
-        <rect x="36" y="16" width="18" height="3" rx="1.5" fill="var(--pri)" />
-        <rect x="36" y="22" width="24" height="3" rx="1.5" fill="var(--line)" />
+      <svg {...common} viewBox="0 0 84 64" aria-hidden="true">
+        <rect x="22" y="1" width="40" height="62" rx="7" fill="var(--pribg)" />
+        <rect x="27" y="7" width="30" height="18" rx="4" fill="var(--card)" />
+        <rect x="31" y="12" width="16" height="3" rx="1.5" fill="var(--pri)" />
+        <rect x="31" y="18" width="22" height="3" rx="1.5" fill="var(--line)" />
         {[0, 1, 2].map((r) =>
           [0, 1, 2].map((c) => (
-            <circle key={`${r}-${c}`} cx={38 + c * 10} cy={40 + r * 9} r="3" fill={r === 2 && c === 1 ? 'var(--acc)' : 'var(--pri)'} opacity={r === 2 && c === 1 ? 1 : 0.45} />
+            <circle
+              key={`${r}-${c}`}
+              cx={32 + c * 10}
+              cy={34 + r * 8}
+              r="2.8"
+              fill={r === 2 && c === 1 ? 'var(--acc)' : 'var(--pri)'}
+              opacity={r === 2 && c === 1 ? 1 : 0.4}
+            />
           )),
         )}
       </svg>
@@ -163,14 +196,14 @@ function Art({ kind }: { kind: 'deck' | 'ussd' | 'app' }) {
   }
 
   return (
-    <svg {...common} viewBox="0 0 96 72" aria-hidden="true">
-      <rect x="30" y="2" width="40" height="68" rx="10" fill="var(--pri)" />
-      <rect x="35" y="9" width="30" height="54" rx="6" fill="var(--card)" />
-      <rect x="39" y="15" width="16" height="5" rx="2.5" fill="var(--pri)" />
-      <rect x="39" y="26" width="22" height="14" rx="4" fill="var(--pribg)" />
-      <rect x="39" y="44" width="22" height="4" rx="2" fill="var(--line)" />
-      <rect x="39" y="52" width="14" height="4" rx="2" fill="var(--line)" />
-      <circle cx="63" cy="33" r="6" fill="var(--acc)" />
+    <svg {...common} viewBox="0 0 84 64" aria-hidden="true">
+      <rect x="26" y="1" width="36" height="62" rx="9" fill="var(--pri)" />
+      <rect x="30" y="7" width="28" height="50" rx="6" fill="var(--card)" />
+      <rect x="34" y="12" width="14" height="4" rx="2" fill="var(--pri)" />
+      <rect x="34" y="22" width="20" height="13" rx="4" fill="var(--pribg)" />
+      <rect x="34" y="40" width="20" height="3.5" rx="1.75" fill="var(--line)" />
+      <rect x="34" y="47" width="12" height="3.5" rx="1.75" fill="var(--line)" />
+      <circle cx="56" cy="29" r="5.5" fill="var(--acc)" />
     </svg>
   )
 }

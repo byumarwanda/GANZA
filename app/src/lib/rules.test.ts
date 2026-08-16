@@ -64,8 +64,8 @@ describe('meeting totals', () => {
 describe('fines', () => {
   it('adds up what is owed', () => {
     expect(totalFines([
-      { id: 1, amt: 300, why: 'fineLate' },
-      { id: 2, amt: 1500, why: 'fineAbsence' },
+      { id: 1, amt: 300, why: 'fineLate', on: '04 Aug' },
+      { id: 2, amt: 1500, why: 'fineAbsence', on: '28 Jul' },
     ])).toBe(1800)
   })
 

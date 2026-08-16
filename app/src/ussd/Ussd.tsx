@@ -1,18 +1,31 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useUssd } from './useUssd'
-import { P, PAD, USSD_CODE, personaForNumber } from './data'
+import { P, PAD, USSD_CODE } from './data'
 import type { PersonaKey } from './data'
-import { MAX_BYTES, MAX_LINES, measure } from './budget'
+import { MAX_BYTES, measure } from './budget'
+import { Fold, Note } from '../shell/Workbench'
+import { useFitScale } from '../shell/useFitScale'
 
-const PERSONAS: PersonaKey[] = ['treasurer', 'president', 'secretary', 'member', 'guest']
+/** The president and the secretary reach the same menu and approve the same
+    things, so the picker offers them as one choice. The secretary SIM is still
+    in the routing table — a real one dialling in lands in the same place. */
+const PERSONAS: PersonaKey[] = ['treasurer', 'president', 'member', 'guest']
 
-export default function Ussd() {
-  const u = useUssd(2)
+const LABEL: Partial<Record<PersonaKey, string>> = { president: 'President / Secretary' }
+
+/** A wider, shorter handset than a smartphone — the shape of the cheap phones
+    these groups actually carry. */
+const W = 372
+const H = 604
+/** A feature-phone screen is a small window above a big keypad, not the other
+    way round. Long dialogs scroll inside it, exactly as they do on the handset. */
+const SCREEN_H = 250
+
+export function UssdDevice({ u }: { u: ReturnType<typeof useUssd> }) {
+  const scale = useFitScale(W, H)
   const { st, node } = u
-  const [simInput, setSimInput] = useState('')
-  const [simNote, setSimNote] = useState('')
 
-  // A feature phone is driven by its keypad, so the real keyboard drives it too.
+  // The keypad drives the session, so the real keyboard drives it too.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = document.activeElement
@@ -26,248 +39,243 @@ export default function Ussd() {
     return () => window.removeEventListener('keydown', onKey)
   }, [u, st.node])
 
-  const budget = useMemo(() => (node ? measure(node) : null), [node])
-
-  const applySim = () => {
-    const hit = personaForNumber(simInput)
-    if (hit) {
-      u.setPersona(hit)
-      setSimNote(`SIM recognised · ${P[hit].name}`)
-    } else if (simInput.replace(/\D/g, '').length > 6) {
-      u.setPersona('guest')
-      setSimNote('Unknown number — this SIM gets the guest menu.')
-    } else {
-      setSimNote('Type one of the numbers on the left.')
-    }
-  }
+  const dialled = !!st.node || st.loading
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32, justifyContent: 'center', alignItems: 'flex-start' }}>
-      <Handset u={u} />
+    <div style={{ width: W * scale, height: H * scale, flex: 'none' }}>
+      <div
+        style={{
+          width: W, height: H, transform: `scale(${scale})`, transformOrigin: 'top left',
+          position: 'relative', background: 'var(--card)', borderRadius: 30,
+          border: '1px solid var(--line)', padding: '14px 18px 18px',
+          boxShadow: '0 24px 60px rgba(28,28,42,.20), 0 0 0 8px #26262f, 0 0 0 9px #43435a',
+          display: 'flex', flexDirection: 'column',
+        }}
+      >
+        {/* Earpiece */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, height: 16, flex: 'none' }}>
+          <span style={{ width: 40, height: 4, borderRadius: 99, background: 'var(--line)' }} />
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--line)' }} />
+        </div>
 
-      <div style={{ flex: '1 1 320px', maxWidth: 460, minWidth: 300 }}>
-        <h2 style={{ fontSize: 21, fontWeight: 600, letterSpacing: '-.015em', margin: '0 0 6px' }}>
-          Whose phone is this?
-        </h2>
-        <p style={{ fontSize: 15, color: 'var(--sub)', lineHeight: 1.55, margin: '0 0 16px', textWrap: 'pretty' }}>
-          Routing is by phone number, never by a menu choice. A member is never asked who they are —
-          the SIM already answered that. Pick a number to see the menu it gets.
-        </p>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {PERSONAS.map((k) => {
-            const p = P[k]
-            const on = st.persona === k
-            return (
-              <button
-                key={k}
-                onClick={() => { u.setPersona(k); setSimNote('') }}
+        {/* The screen. The USSD dialog lives here, not over the keypad, because
+            on a feature phone the keys stay under your thumb. */}
+        <div
+          style={{
+            marginTop: 10, background: 'var(--bg)', borderRadius: 14, border: '1px solid var(--line)',
+            height: SCREEN_H, flex: 'none', display: 'flex', flexDirection: 'column',
+            justifyContent: 'center', overflow: 'hidden',
+          }}
+        >
+          {st.loading || node || st.ended ? (
+            <Dialog u={u} />
+          ) : (
+            <div style={{ textAlign: 'center', padding: '0 16px' }}>
+              <div
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left',
-                  border: `2px solid ${on ? 'var(--pri)' : 'var(--line)'}`,
-                  background: on ? 'var(--pribg)' : 'var(--card)',
-                  borderRadius: 14, padding: '13px 15px', cursor: 'pointer',
+                  fontSize: 24, fontWeight: 700, letterSpacing: '.02em',
+                  fontVariantNumeric: 'tabular-nums', color: 'var(--ink)',
                 }}
               >
-                <span
-                  style={{
-                    fontVariantNumeric: 'tabular-nums', fontSize: 15, fontWeight: 600,
-                    color: on ? 'var(--pri)' : 'var(--ink)', flex: 'none',
-                  }}
-                >
-                  {p.num}
-                </span>
-                <span style={{ flex: 1, minWidth: 0, fontSize: 15, color: 'var(--sub)' }}>
-                  {p.mid ? `${p.name} · ${p.role.en}` : 'Not in any group'}
-                </span>
-              </button>
-            )
-          })}
+                {USSD_CODE}
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--sub)', marginTop: 8 }}>
+                {P[st.persona].num}
+              </div>
+            </div>
+          )}
         </div>
 
-        <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-          <input
-            value={simInput}
-            onChange={(e) => setSimInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') applySim() }}
-            data-free-text="yes"
-            placeholder="Or type any number…"
-            inputMode="tel"
-            aria-label="Try another number"
-            style={{
-              flex: 1, height: 48, borderRadius: 14, border: '1.5px solid var(--line)',
-              background: 'var(--card)', padding: '0 15px', fontSize: 15, outline: 'none',
-              fontVariantNumeric: 'tabular-nums',
-            }}
-          />
-          <button
-            onClick={applySim}
-            style={{
-              height: 48, padding: '0 20px', borderRadius: 14, border: 'none', background: 'var(--pri)',
-              color: 'var(--priink)', fontSize: 15, fontWeight: 600, cursor: 'pointer',
-            }}
-          >
-            Use SIM
-          </button>
-        </div>
-        {simNote && (
-          <div style={{ fontSize: 13, color: 'var(--sub)', marginTop: 8 }}>{simNote}</div>
-        )}
-
-        <div style={{ display: 'flex', gap: 8, marginTop: 20, alignItems: 'center', flexWrap: 'wrap' }}>
-          <span style={{ display: 'flex', background: 'var(--chip)', borderRadius: 999, padding: 3 }}>
-            {(['en', 'rw'] as const).map((l) => (
-              <button
-                key={l}
-                onClick={() => u.setLang(l)}
-                style={{
-                  border: 'none', borderRadius: 999, padding: '8px 14px', fontSize: 13, fontWeight: 600,
-                  cursor: 'pointer', background: st.lang === l ? 'var(--card)' : 'transparent',
-                  color: st.lang === l ? 'var(--ink)' : 'var(--sub)',
-                }}
-              >
-                {l.toUpperCase()}
-              </button>
-            ))}
-          </span>
-          <button
-            onClick={u.reset}
-            style={{
-              height: 40, padding: '0 16px', borderRadius: 999, border: '1.5px solid var(--line)',
-              background: 'var(--card)', color: 'var(--ink)', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-            }}
-          >
-            Reset demo
-          </button>
-        </div>
-
-        {/* The constraint is the design, so it is shown rather than described. */}
-        {budget && (
-          <div
-            style={{
-              marginTop: 20, background: 'var(--card)', borderRadius: 14, padding: '14px 16px',
-              border: `1.5px solid ${budget.over ? 'var(--amber)' : 'var(--line)'}`,
-            }}
-          >
-            <div
+        {/* Keypad */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginTop: 12, flex: 'none' }}>
+          {PAD.map(([k, sub]) => (
+            <button
+              key={k}
+              onClick={() => u.type(k)}
+              aria-label={k}
               style={{
-                fontSize: 13, fontWeight: 600, color: 'var(--sub)', letterSpacing: '.08em',
-                textTransform: 'uppercase', marginBottom: 8,
+                height: 46, borderRadius: 12, border: '1px solid var(--line)', background: 'none',
+                cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center',
+                justifyContent: 'center', gap: 0, color: 'var(--ink)',
               }}
             >
-              Screen budget
-            </div>
-            <div style={{ fontSize: 15, fontVariantNumeric: 'tabular-nums' }}>
-              {budget.bytes}/{MAX_BYTES} bytes · {budget.rows} lines
-            </div>
-            <div style={{ fontSize: 13, color: 'var(--sub)', marginTop: 6, lineHeight: 1.5 }}>
-              {budget.over
-                ? 'Past 182 bytes — a carrier would truncate this screen.'
-                : budget.overTarget
-                  ? `Node ${st.node} · sends in one piece, ${budget.rows - MAX_LINES} line past the ${MAX_LINES}-line target, so the handset scrolls.`
-                  : `Node ${st.node} · one screen, no scrolling.`}
-            </div>
-          </div>
-        )}
+              <span aria-hidden="true" style={{ fontSize: 19, fontWeight: 500, lineHeight: 1.1, fontVariantNumeric: 'tabular-nums' }}>
+                {k}
+              </span>
+              <span
+                aria-hidden="true"
+                style={{ fontSize: 8, letterSpacing: '.12em', color: 'var(--sub)', textTransform: 'uppercase', height: 9 }}
+              >
+                {sub}
+              </span>
+            </button>
+          ))}
+        </div>
 
-        <p style={{ fontSize: 13, color: 'var(--sub)', marginTop: 16, lineHeight: 1.55 }}>
-          Keyboard works too: digits type, Enter sends, Backspace deletes, Esc hangs up.
-          Demo PIN <strong style={{ color: 'var(--ink)' }}>1234</strong>.
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12, flex: 'none' }}>
+          <button
+            onClick={dialled ? u.hangUp : u.dial}
+            aria-label={dialled ? 'Hang up' : 'Dial'}
+            style={{
+              width: 54, height: 54, borderRadius: '50%', border: 'none',
+              background: dialled ? 'var(--red)' : 'var(--pri)', color: '#fff',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <svg width={24} height={24} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+              style={{ transform: dialled ? 'rotate(135deg)' : 'none' }}>
+              <path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C11.3 21 3 12.7 3 3c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1l-2.3 2.2z" />
+            </svg>
+          </button>
+        </div>
+
+        {/* A brief flash on the handset; the text itself is in the panel. */}
+        {st.sms && <SmsFlash />}
       </div>
     </div>
   )
 }
 
-function Handset({ u }: { u: ReturnType<typeof useUssd> }) {
+export function UssdPanel({ u }: { u: ReturnType<typeof useUssd> }) {
   const { st, node } = u
-  const dialled = !!st.node || st.loading
+  const budget = useMemo(() => (node ? measure(node) : null), [node])
 
   return (
-    <div
-      style={{
-        position: 'relative', width: 330, flex: 'none', background: 'var(--card)',
-        borderRadius: 44, border: '1px solid var(--line)', padding: 22,
-        boxShadow: '0 30px 80px rgba(28,28,42,.18)',
-      }}
-    >
-      {/* Earpiece */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, alignItems: 'center', marginBottom: 16 }}>
-        <span style={{ width: 46, height: 5, borderRadius: 99, background: 'var(--line)' }} />
-        <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--line)' }} />
-      </div>
-
-      {/* The screen. The USSD dialog lives here rather than over the keypad,
-          because on a feature phone the keys stay under your thumb while the
-          session is open. */}
-      <div
-        style={{
-          background: 'var(--bg)', borderRadius: 18, border: '1px solid var(--line)',
-          minHeight: 132, display: 'flex', flexDirection: 'column', justifyContent: 'center',
-          overflow: 'hidden',
-        }}
-      >
-        {st.loading || node || st.ended ? (
-          <Dialog u={u} />
-        ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '0 16px' }}>
-            <span style={{ width: 28, height: 28, borderRadius: '50%', border: '1.5px solid var(--pri)', color: 'var(--pri)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, flex: 'none' }}>
-              +
-            </span>
-            <span
-              style={{
-                flex: 1, textAlign: 'center', fontSize: 22, fontWeight: 700, letterSpacing: '.02em',
-                fontVariantNumeric: 'tabular-nums', color: 'var(--ink)',
-              }}
-            >
-              {USSD_CODE}
-            </span>
-            <span style={{ width: 28, flex: 'none' }} />
-          </div>
-        )}
-      </div>
-
-      {/* Keypad */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginTop: 20 }}>
-        {PAD.map(([k, sub]) => (
-          <button
-            key={k}
-            onClick={() => u.type(k)}
-            // The printed letters are decoration; the key is the digit.
-            aria-label={k}
-            style={{
-              aspectRatio: '1', borderRadius: '50%', border: '1.5px solid var(--line)', background: 'none',
-              cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center',
-              justifyContent: 'center', gap: 1, color: 'var(--ink)',
-            }}
-          >
-            <span aria-hidden="true" style={{ fontSize: 21, fontWeight: 500, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{k}</span>
-            <span aria-hidden="true" style={{ fontSize: 9, letterSpacing: '.1em', color: 'var(--sub)', textTransform: 'uppercase', minHeight: 10 }}>
-              {sub}
-            </span>
-          </button>
-        ))}
-      </div>
-
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 18 }}>
-        <button
-          onClick={dialled ? u.hangUp : u.dial}
-          aria-label={dialled ? 'Hang up' : 'Dial'}
+    <div>
+      {st.smsLog.length > 0 && (
+        <div
           style={{
-            width: 62, height: 62, borderRadius: '50%', border: 'none',
-            background: dialled ? 'var(--red)' : 'var(--pri)', color: '#fff',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 14,
+            padding: '12px 14px', marginBottom: 20,
           }}
         >
-          <svg width={26} height={26} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-            style={{ transform: dialled ? 'rotate(135deg)' : 'none' }}>
-            <path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C11.3 21 3 12.7 3 3c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1l-2.3 2.2z" />
-          </svg>
+          <div
+            style={{
+              display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600,
+              color: 'var(--sub)', letterSpacing: '.08em', textTransform: 'uppercase', marginBottom: 8,
+            }}
+          >
+            <span>Messages</span>
+            <span style={{ fontVariantNumeric: 'tabular-nums' }}>{st.smsLog[0].time}</span>
+          </div>
+          {st.smsLog.slice(0, 3).map((m, i) => (
+            <div
+              key={m.id}
+              style={{
+                fontSize: 13, lineHeight: 1.5, color: i === 0 ? 'var(--ink)' : 'var(--sub)',
+                paddingTop: i ? 8 : 0, marginTop: i ? 8 : 0,
+                borderTop: i ? '1px solid var(--line)' : 'none',
+              }}
+            >
+              {m.text}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>Whose phone is this?</div>
+      <div style={{ fontSize: 14, color: 'var(--sub)', marginBottom: 14 }}>
+        The menu follows the number that dialled.
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {PERSONAS.map((k) => {
+          const p = P[k]
+          const on = st.persona === k
+          return (
+            <button
+              key={k}
+              onClick={() => u.setPersona(k)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
+                border: `1.5px solid ${on ? 'var(--pri)' : 'var(--line)'}`,
+                background: on ? 'var(--pribg)' : 'var(--card)',
+                borderRadius: 12, padding: '11px 13px', cursor: 'pointer',
+              }}
+            >
+              <span
+                style={{
+                  fontVariantNumeric: 'tabular-nums', fontSize: 14, fontWeight: 600,
+                  color: on ? 'var(--pri)' : 'var(--ink)', flex: 'none',
+                }}
+              >
+                {p.num}
+              </span>
+              <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: 'var(--sub)' }}>
+                {p.mid ? LABEL[k] ?? p.role.en : 'Not in a group'}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, marginTop: 14, alignItems: 'center', flexWrap: 'wrap' }}>
+        <span style={{ display: 'flex', background: 'var(--chip)', borderRadius: 999, padding: 3 }}>
+          {(['en', 'rw'] as const).map((l) => (
+            <button
+              key={l}
+              onClick={() => u.setLang(l)}
+              style={{
+                border: 'none', borderRadius: 999, padding: '7px 13px', fontSize: 13, fontWeight: 600,
+                cursor: 'pointer', background: st.lang === l ? 'var(--card)' : 'transparent',
+                color: st.lang === l ? 'var(--ink)' : 'var(--sub)',
+              }}
+            >
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </span>
+        <button
+          onClick={u.reset}
+          style={{
+            height: 36, padding: '0 14px', borderRadius: 999, border: '1px solid var(--line)',
+            background: 'var(--card)', color: 'var(--ink)', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+          }}
+        >
+          Reset
         </button>
       </div>
 
-      {/* The receipt layer — the only artefact that survives the session. */}
-      {st.sms && <SmsToast text={st.sms.text} time={st.sms.time} />}
+      <div style={{ marginTop: 22 }}>
+        <Fold title="How to use it">
+          <Note>Pick a number above, press the green key, then follow the menu.</Note>
+          <Note>Demo PIN is <strong style={{ color: 'var(--ink)' }}>1234</strong>.</Note>
+          <Note>Your keyboard works: digits type, Enter sends, Esc hangs up.</Note>
+        </Fold>
+
+        <Fold title="What to try">
+          <Note><strong style={{ color: 'var(--ink)' }}>Treasurer.</strong> 1 → member 3 → 1. That is one contribution, with its SMS receipt.</Note>
+          <Note><strong style={{ color: 'var(--ink)' }}>President.</strong> 1 → 1 → 1. Approves the treasurer's deposit.</Note>
+          <Note><strong style={{ color: 'var(--ink)' }}>Member.</strong> 1 → PIN. Her own savings, nobody else's.</Note>
+        </Fold>
+
+        <Fold title="Screen budget">
+          {budget ? (
+            <>
+              <div
+                style={{
+                  fontSize: 15, fontVariantNumeric: 'tabular-nums', fontWeight: 600,
+                  color: budget.over ? 'var(--amber)' : 'var(--ink)', marginBottom: 8,
+                }}
+              >
+                {budget.bytes}/{MAX_BYTES} bytes
+              </div>
+              <Note>
+                A carrier sends one USSD screen as a single {MAX_BYTES}-byte message. Go over and the
+                phone cuts the text off.
+              </Note>
+              <Note>This is a size limit, not a price. Sessions are billed per session, not per byte.</Note>
+            </>
+          ) : (
+            <Note>Dial to see how big each screen is.</Note>
+          )}
+        </Fold>
+
+        <Fold title="Why USSD">
+          <Note>It works on every phone in the country, with no internet and no app to install.</Note>
+          <Note>Live service runs about $200 a month through Africa's Talking. A dedicated RURA code is in progress.</Note>
+        </Fold>
+      </div>
     </div>
   )
 }
@@ -280,100 +288,94 @@ function Dialog({ u }: { u: ReturnType<typeof useUssd> }) {
       role="dialog"
       aria-live="polite"
       style={{
-        background: 'var(--card)', borderRadius: 17, overflow: 'hidden', margin: 1,
-        animation: 'rise .16s ease', maxHeight: 420, overflowY: 'auto',
+        background: 'var(--card)', borderRadius: 13, margin: 1,
+        animation: 'rise .16s ease', maxHeight: 'calc(100% - 2px)', overflowY: 'auto',
       }}
     >
-        {st.loading ? (
-          <div style={{ padding: '28px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span
-              style={{
-                width: 18, height: 18, borderRadius: '50%', border: '3px solid var(--chip)',
-                borderTopColor: 'var(--pri)', animation: 'spin .8s linear infinite', flex: 'none',
-              }}
-            />
-            <span style={{ fontSize: 15, color: 'var(--sub)' }}>USSD code running…</span>
+      {st.loading ? (
+        <div style={{ padding: '24px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span
+            style={{
+              width: 16, height: 16, borderRadius: '50%', border: '3px solid var(--chip)',
+              borderTopColor: 'var(--pri)', animation: 'spin .8s linear infinite', flex: 'none',
+            }}
+          />
+          <span style={{ fontSize: 14, color: 'var(--sub)' }}>USSD code running…</span>
+        </div>
+      ) : st.ended ? (
+        <>
+          <div style={{ padding: '18px 18px 14px', fontSize: 14, lineHeight: 1.5 }}>{st.ended}</div>
+          <DialogButtons>
+            <DialogButton onClick={u.hangUp} strong>OK</DialogButton>
+          </DialogButtons>
+        </>
+      ) : node ? (
+        <>
+          <div style={{ padding: '16px 18px 12px' }}>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 7, textWrap: 'balance' }}>{node.head}</div>
+
+            {(node.body ?? []).map((b, i) => (
+              <div key={i} style={{ fontSize: 14, lineHeight: 1.45, whiteSpace: 'pre-line' }}>{b}</div>
+            ))}
+
+            {(node.opts ?? []).length > 0 && (
+              <div style={{ marginTop: (node.body ?? []).length ? 9 : 0 }}>
+                {(node.opts ?? []).map((o) => (
+                  <div key={o.k} style={{ fontSize: 14, lineHeight: 1.5 }}>
+                    <span style={{ fontVariantNumeric: 'tabular-nums', fontWeight: 700 }}>{o.k}</span> {o.label}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {node.input && (
+              <div style={{ fontSize: 14, color: 'var(--sub)', marginTop: 9 }}>{node.input.prompt}</div>
+            )}
+
+            {node.foot && (
+              <div style={{ fontSize: 12, color: 'var(--sub)', marginTop: 9 }}>{node.foot}</div>
+            )}
+
+            {!node.end && (
+              <input
+                value={node.input?.mask ? '•'.repeat(st.reply.length) : st.reply}
+                onChange={(e) => { if (node.input?.free) u.actions.set({ reply: e.target.value, err: '' }) }}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); u.send() } }}
+                readOnly={!node.input?.free}
+                data-free-text={node.input?.free ? 'yes' : 'no'}
+                autoFocus
+                aria-label={node.input?.prompt ?? 'Reply'}
+                style={{
+                  width: '100%', marginTop: 10, height: 38, borderRadius: 9,
+                  border: '1.5px solid var(--line)', background: 'var(--bg)', padding: '0 11px',
+                  fontSize: 16, outline: 'none', fontVariantNumeric: 'tabular-nums', color: 'var(--ink)',
+                }}
+              />
+            )}
+
+            {st.err && (
+              <div style={{ fontSize: 12, color: 'var(--red)', marginTop: 7, fontWeight: 500 }}>{st.err}</div>
+            )}
           </div>
-        ) : st.ended ? (
-          <>
-            <div style={{ padding: '20px 20px 16px', fontSize: 15, lineHeight: 1.5 }}>{st.ended}</div>
-            <DialogButtons>
+
+          <DialogButtons>
+            {node.end ? (
               <DialogButton onClick={u.hangUp} strong>OK</DialogButton>
-            </DialogButtons>
-          </>
-        ) : node ? (
-          <>
-            <div style={{ padding: '18px 20px 14px' }}>
-              <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 8, textWrap: 'balance' }}>{node.head}</div>
-
-              {(node.body ?? []).map((b, i) => (
-                <div key={i} style={{ fontSize: 15, lineHeight: 1.45, color: 'var(--ink)', whiteSpace: 'pre-line' }}>
-                  {b}
-                </div>
-              ))}
-
-              {(node.opts ?? []).length > 0 && (
-                <div style={{ marginTop: (node.body ?? []).length ? 10 : 0 }}>
-                  {(node.opts ?? []).map((o) => (
-                    <div key={o.k} style={{ fontSize: 15, lineHeight: 1.5 }}>
-                      <span style={{ fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>{o.k}</span> {o.label}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {node.input && (
-                <div style={{ fontSize: 15, color: 'var(--sub)', marginTop: 10 }}>{node.input.prompt}</div>
-              )}
-
-              {node.foot && (
-                <div style={{ fontSize: 13, color: 'var(--sub)', marginTop: 10 }}>{node.foot}</div>
-              )}
-
-              {!node.end && (
-                <input
-                  value={node.input?.mask ? '•'.repeat(st.reply.length) : st.reply}
-                  onChange={(e) => {
-                    if (node.input?.free) u.actions.set({ reply: e.target.value, err: '' })
-                  }}
-                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); u.send() } }}
-                  readOnly={!node.input?.free}
-                  data-free-text={node.input?.free ? 'yes' : 'no'}
-                  autoFocus
-                  aria-label={node.input?.prompt ?? 'Reply'}
-                  style={{
-                    width: '100%', marginTop: 12, height: 42, borderRadius: 10,
-                    border: '1.5px solid var(--line)', background: 'var(--bg)', padding: '0 12px',
-                    fontSize: 17, outline: 'none', fontVariantNumeric: 'tabular-nums', color: 'var(--ink)',
-                  }}
-                />
-              )}
-
-              {st.err && (
-                <div style={{ fontSize: 13, color: 'var(--red)', marginTop: 8, fontWeight: 500 }}>{st.err}</div>
-              )}
-            </div>
-
-            <DialogButtons>
-              {node.end ? (
-                <DialogButton onClick={u.hangUp} strong>OK</DialogButton>
-              ) : (
-                <>
-                  <DialogButton onClick={u.hangUp}>CANCEL</DialogButton>
-                  <DialogButton onClick={u.send} strong>SEND</DialogButton>
-                </>
-              )}
-            </DialogButtons>
-          </>
-        ) : null}
+            ) : (
+              <>
+                <DialogButton onClick={u.hangUp}>CANCEL</DialogButton>
+                <DialogButton onClick={u.send} strong>SEND</DialogButton>
+              </>
+            )}
+          </DialogButtons>
+        </>
+      ) : null}
     </div>
   )
 }
 
 function DialogButtons({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ display: 'flex', borderTop: '0.5px solid var(--line)' }}>{children}</div>
-  )
+  return <div style={{ display: 'flex', borderTop: '0.5px solid var(--line)' }}>{children}</div>
 }
 
 function DialogButton({ onClick, strong, children }: { onClick: () => void; strong?: boolean; children: React.ReactNode }) {
@@ -381,8 +383,8 @@ function DialogButton({ onClick, strong, children }: { onClick: () => void; stro
     <button
       onClick={onClick}
       style={{
-        flex: 1, height: 48, border: 'none', background: 'none', cursor: 'pointer',
-        fontSize: 14, fontWeight: 600, letterSpacing: '.06em',
+        flex: 1, height: 42, border: 'none', background: 'none', cursor: 'pointer',
+        fontSize: 13, fontWeight: 700, letterSpacing: '.06em',
         color: strong ? 'var(--pri)' : 'var(--sub)',
       }}
     >
@@ -391,26 +393,19 @@ function DialogButton({ onClick, strong, children }: { onClick: () => void; stro
   )
 }
 
-function SmsToast({ text, time }: { text: string; time: string }) {
+function SmsFlash() {
   return (
     <div
-      role="status"
+      aria-hidden="true"
       style={{
-        position: 'absolute', left: 14, right: 14, bottom: 96, zIndex: 8, background: 'var(--ink)',
-        color: 'var(--bg)', borderRadius: 14, padding: '12px 14px', animation: 'rise .2s ease',
-        boxShadow: '0 12px 30px rgba(0,0,0,.3)',
+        position: 'absolute', top: 14, left: '50%', transform: 'translateX(-50%)',
+        display: 'flex', alignItems: 'center', gap: 7, background: 'var(--ink)', color: 'var(--bg)',
+        borderRadius: 99, padding: '4px 11px', fontSize: 10, fontWeight: 600, letterSpacing: '.08em',
+        textTransform: 'uppercase', animation: 'rise .2s ease', zIndex: 8,
       }}
     >
-      <div
-        style={{
-          display: 'flex', justifyContent: 'space-between', fontSize: 11, opacity: 0.7,
-          letterSpacing: '.08em', textTransform: 'uppercase', marginBottom: 4,
-        }}
-      >
-        <span>SMS · Ganza</span>
-        <span style={{ fontVariantNumeric: 'tabular-nums' }}>{time}</span>
-      </div>
-      <div style={{ fontSize: 13, lineHeight: 1.45 }}>{text}</div>
+      <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--acc)' }} />
+      SMS sent
     </div>
   )
 }

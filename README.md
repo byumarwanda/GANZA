@@ -8,13 +8,18 @@ or a group vote — before money or rules move.
 
 **Live: <https://byumarwanda.github.io/GANZA/>**
 
-The submission has three ways in, and the site's front page offers all three:
+Built for the **BNR FinTech Innovation Hackathon 2026**. The link opens on a welcome page offering
+three ways in, and every page after it keeps a **Welcome** tab so there is always a way back:
 
 | | What it is | Where |
 |---|---|---|
-| **Pitch deck** | The problem, the users, the payment flow. | `pitch-deck.html` |
+| **Pitch deck** | The problem, the users, the payment flow. | `#/deck` · `Ganza Two Pager -source-.html` |
 | **USSD demo** | The whole product on a feature phone, over `*384*48293#`. Four pathways, routed by SIM. | `#/ussd` · built from `00-CORE.md` and the four pathway specs |
 | **Mobile app** | The same logbook with room to breathe. Installs to the home screen, works offline. | `#/app` · built from `Ganza - Hand off/` |
+
+On a laptop the demo and the app open in a two-part workbench: the phone sits fixed on the left, at
+a size that fits the window without the page ever scrolling, and the notes sit quietly on the right
+inside dropdowns that stay closed until they are wanted.
 
 Everything lives in `app/`. The design handoff and the USSD specs stay in the repository as the
 reference they were built from.
@@ -109,8 +114,13 @@ Every screen in `00-CORE.md`, `01-TREASURER.md`, `02-PRESIDENT-SECRETARY.md`, `0
   open, no payment above the balance, no removal with an open loan, one contribution per member per
   meeting.
 - **The screen budget is visible.** Each screen reports its size against the 182 bytes a carrier
-  will actually send. `app/src/ussd/budget.ts` measures it and a test holds every screen inside it,
-  in both languages.
+  will actually send in one USSD message. Go over it and the handset simply cuts the text off — on a
+  money screen that means a figure losing its last digits. It is a size limit, not a price: USSD is
+  billed per session, not per byte. `app/src/ussd/budget.ts` measures it and a test holds every
+  screen inside it, in both languages.
+- **The president and the secretary are one choice.** They reach the same menu and approve the same
+  things, so the demo's SIM picker offers `President / Secretary` rather than two near-identical
+  entries. Both numbers still route correctly.
 
 ### The mobile app
 
@@ -180,8 +190,9 @@ approximated through a component library's defaults.
 
 ```
 app/src/
-  Root.tsx    hash router: the submission page, the USSD demo, the app
-  Landing.tsx the submission front door
+  Root.tsx    hash router: the welcome page, the deck, the USSD demo, the app
+  Landing.tsx the welcome page
+  shell/      the workbench frame: top bar, dropdowns, fit-to-window scaling
   ussd/       the USSD demo — data, the 55-node map, the session engine, the handset
   lib/        strings, group data, money rules, storage, the offline outbox
   state/      one context holding app state and the shared actions

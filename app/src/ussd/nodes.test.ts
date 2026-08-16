@@ -10,7 +10,7 @@ const MAX_CHARS = 26
 function state(over: Partial<UssdState> = {}): UssdState {
   return {
     persona: 'treasurer', lang: 'en', node: null, reply: '', err: '', loading: false, stack: [],
-    coll: [], exp: [], pinOk: false, acting: false, ctx: {}, page: 0, sms: null,
+    coll: [], exp: [], pinOk: false, acting: false, ctx: {}, page: 0, sms: null, smsLog: [],
     members: structuredClone(MEM),
     pending: [
       { id: 'd1', type: 'deposit', by: 'treasurer', collected: 80000, exp: 5000, net: 75000 },

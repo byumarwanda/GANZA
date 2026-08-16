@@ -65,7 +65,7 @@ export default function Home() {
   // What this person owes right now. Hidden entirely when there is nothing.
   const dueRows: { label: string; sub: string; amt: string }[] = st.fines
     .filter((x) => x.id === me.id)
-    .map((x) => ({ label: t[x.why], sub: `${t.dueBy} 11 Aug`, amt: fmt(x.amt) }))
+    .map((x) => ({ label: t[x.why], sub: x.on, amt: fmt(x.amt) }))
   if (me.l > 0) dueRows.push({ label: t.loanDue, sub: `${t.dueBy} 07 Sep`, amt: fmt(Math.round(me.l / 3)) })
 
   const iconFor: Record<string, string> = { contribution: 'plus', fine: 'minus', loanPayment: 'cash', deposit: 'bank' }
@@ -179,7 +179,9 @@ export default function Home() {
             key={s.key}
             onClick={s.tap}
             style={{
-              flex: 'none', width: s.filled ? 236 : 186, scrollSnapAlign: 'start', background: 'var(--card)',
+              // One width for all of them. A row of cards that disagree on
+              // width reads as a row of unrelated things.
+              flex: 'none', width: 236, scrollSnapAlign: 'start', background: 'var(--card)',
               color: 'var(--ink)', border: '1px solid var(--line)', borderRadius: 18, padding: 20,
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 152,
               textAlign: 'left', cursor: s.tap ? 'pointer' : 'default',
@@ -264,7 +266,13 @@ export default function Home() {
 
       {/* An empty section is never shown — the whole block goes, label and all. */}
       {dueRows.length > 0 && (
-        <div style={{ background: 'var(--card)', borderRadius: 16, overflow: 'hidden', marginTop: 16 }}>
+        <button
+          onClick={() => push('fines')}
+          style={{
+            width: '100%', display: 'block', textAlign: 'left', border: 'none', padding: 0,
+            background: 'var(--card)', borderRadius: 16, overflow: 'hidden', marginTop: 16, cursor: 'pointer',
+          }}
+        >
           <div
             style={{
               display: 'flex', alignItems: 'center', gap: 8, padding: '16px 18px 10px', fontSize: 13,
@@ -272,7 +280,8 @@ export default function Home() {
             }}
           >
             <Ico name="clock" size={15} sw={1.9} />
-            {t.myFines}
+            <span style={{ flex: 1 }}>{t.myFines}</span>
+            <span style={{ color: 'var(--sub)', fontSize: 15, letterSpacing: 0 }}>›</span>
           </div>
           {dueRows.map((d, i) => (
             <div
@@ -298,7 +307,7 @@ export default function Home() {
               </span>
             </div>
           ))}
-        </div>
+        </button>
       )}
 
       {notMem && (
