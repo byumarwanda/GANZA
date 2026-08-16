@@ -1,18 +1,27 @@
 import { Logo } from './components/icons'
 
+/** The welcome page.
+ *
+ * One screen, nothing below the fold on a laptop: a name, a single sentence
+ * about what it is, and the three doors. Everything that was scattered down a
+ * long page — facts, restatements, closing lines — either moved onto the card
+ * it belongs to or went away, because a judge reading this has two minutes and
+ * three things to open.
+ */
+
 const CARDS = [
   {
     href: '#/deck',
     kicker: 'Two pages',
     title: 'Pitch deck',
-    body: 'The problem, the flow, the business model.',
+    body: 'The problem, the flow, the money.',
     icon: 'deck' as const,
   },
   {
     href: '#/ussd',
     kicker: 'Any phone',
     title: 'USSD demo',
-    body: 'Dial *384*48293# and try it. No internet needed.',
+    body: 'Dial *384*48293#. No internet.',
     icon: 'ussd' as const,
   },
   {
@@ -24,141 +33,97 @@ const CARDS = [
   },
 ]
 
-const FACTS = [
-  ['The ritual stays', 'Meet. Contribute. Discuss. Decide.'],
-  ['The friction goes', 'No counting, totalling or reconciling by hand.'],
-  ['Your phone number decides', 'What you see depends on who you are in the group.'],
-]
-
 export default function Landing() {
   return (
-    <div style={{ minHeight: '100dvh', background: 'var(--bg)', overflowY: 'auto' }}>
-      <div style={{ maxWidth: 940, margin: '0 auto', padding: '72px 24px 80px' }}>
-
-        <header style={{ textAlign: 'center' }}>
-          <Logo size={64} />
-          <h1
-            style={{
-              fontFamily: "'Archivo',sans-serif", fontSize: 'clamp(34px, 6vw, 52px)', fontWeight: 700,
-              lineHeight: 1, letterSpacing: '-.03em', margin: '24px 0 0',
-            }}
-          >
-            Ganza
-          </h1>
-          <p
-            style={{
-              fontSize: 'clamp(19px, 2.6vw, 24px)', lineHeight: 1.35, letterSpacing: '-.015em',
-              margin: '20px auto 0', maxWidth: 480, textWrap: 'balance',
-            }}
-          >
-            The ikimina notebook, on any phone.
-          </p>
-          <p style={{ fontSize: 17, color: 'var(--sub)', margin: '12px 0 0' }}>
-            We never hold your money.
-          </p>
-          <p
-            style={{
-              fontSize: 13, color: 'var(--sub)', fontWeight: 500, letterSpacing: '.12em',
-              textTransform: 'uppercase', margin: '32px 0 0',
-            }}
-          >
-            FinTech Innovation Hackathon 2026
-          </p>
-        </header>
-
-        {/* One line of problem, in the group's own words. */}
+    <div
+      style={{
+        minHeight: '100dvh', background: 'var(--bg)', display: 'flex', flexDirection: 'column',
+        justifyContent: 'center', alignItems: 'center', padding: '24px 24px 20px',
+        gap: 'clamp(28px, 6vh, 60px)',
+      }}
+    >
+      <header style={{ textAlign: 'center' }}>
+        <Logo size={52} />
+        <h1
+          style={{
+            fontFamily: "'Archivo',sans-serif", fontSize: 'clamp(30px, 5vw, 44px)', fontWeight: 700,
+            lineHeight: 1, letterSpacing: '-.03em', margin: '16px 0 0',
+          }}
+        >
+          Ganza
+        </h1>
         <p
           style={{
-            fontSize: 'clamp(17px, 2.2vw, 21px)', lineHeight: 1.5, textAlign: 'center',
-            margin: '72px auto 0', maxWidth: 520, textWrap: 'balance',
+            fontSize: 'clamp(18px, 2.4vw, 23px)', lineHeight: 1.35, letterSpacing: '-.015em',
+            margin: '16px auto 0', maxWidth: 460, textWrap: 'balance',
           }}
         >
-          Rwandans already save together.{' '}
-          <span style={{ color: 'var(--sub)' }}>The writing down is what breaks.</span>
+          The ikimina notebook, on any phone.
         </p>
-
-        <div
+        <p style={{ fontSize: 16, color: 'var(--sub)', margin: '10px 0 0' }}>
+          We never hold your money.
+        </p>
+        <p
           style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: 32, margin: '56px 0 0',
+            fontSize: 12, color: 'var(--sub)', fontWeight: 500, letterSpacing: '.12em',
+            textTransform: 'uppercase', margin: '20px 0 0',
           }}
         >
-          {FACTS.map(([head, body]) => (
-            <div key={head}>
-              <div style={{ fontSize: 17, fontWeight: 600, marginBottom: 8 }}>{head}</div>
-              <div style={{ fontSize: 15, color: 'var(--sub)', lineHeight: 1.6, textWrap: 'pretty' }}>{body}</div>
-            </div>
-          ))}
-        </div>
+          FinTech Innovation Hackathon 2026
+        </p>
+      </header>
 
-        <hr style={{ border: 0, borderTop: '1px solid var(--line)', margin: '72px 0 0' }} />
-
-        <div
-          style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: 20, margin: '56px 0 0',
-          }}
-        >
-          {CARDS.map((c) => (
-            <a
-              key={c.href}
-              href={c.href}
+      <div
+        style={{
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+          gap: 18, width: '100%', maxWidth: 880,
+        }}
+      >
+        {CARDS.map((c) => (
+          <a
+            key={c.href}
+            href={c.href}
+            style={{
+              display: 'flex', flexDirection: 'column', background: 'var(--card)', borderRadius: 18,
+              border: '1px solid var(--line)', padding: '22px 22px 20px', textDecoration: 'none',
+              color: 'var(--ink)',
+            }}
+          >
+            <Art kind={c.icon} />
+            <div
               style={{
-                display: 'flex', flexDirection: 'column', background: 'var(--card)', borderRadius: 20,
-                border: '1px solid var(--line)', padding: 28, textDecoration: 'none', color: 'var(--ink)',
+                fontSize: 12, fontWeight: 600, color: 'var(--sub)', letterSpacing: '.08em',
+                textTransform: 'uppercase', marginTop: 18,
               }}
             >
-              <Art kind={c.icon} />
-              <div
-                style={{
-                  fontSize: 13, fontWeight: 600, color: 'var(--sub)', letterSpacing: '.08em',
-                  textTransform: 'uppercase', marginTop: 28,
-                }}
-              >
-                {c.kicker}
-              </div>
-              <div style={{ fontSize: 21, fontWeight: 600, letterSpacing: '-.015em', marginTop: 8 }}>{c.title}</div>
-              <p style={{ fontSize: 15, color: 'var(--sub)', lineHeight: 1.6, margin: '10px 0 0', flex: 1, textWrap: 'pretty' }}>
-                {c.body}
-              </p>
-              <span
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 28, height: 50,
-                  borderRadius: 14, background: 'var(--pri)', color: 'var(--priink)', fontSize: 17, fontWeight: 600,
-                }}
-              >
-                Open
-              </span>
-            </a>
-          ))}
-        </div>
-
-        {/* The one promise the whole product rests on. */}
-        <p
-          style={{
-            fontSize: 'clamp(17px, 2.2vw, 21px)', lineHeight: 1.5, textAlign: 'center',
-            margin: '80px auto 0', maxWidth: 560, textWrap: 'balance',
-          }}
-        >
-          One person writes it.{' '}
-          <span style={{ color: 'var(--sub)' }}>Another checks it.</span>
-        </p>
-
-        <footer
-          style={{
-            marginTop: 56, textAlign: 'center', fontSize: 13, color: 'var(--sub)', lineHeight: 1.7,
-          }}
-        >
-          Sample data. No real money moves.
-        </footer>
+              {c.kicker}
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 600, letterSpacing: '-.015em', marginTop: 6 }}>{c.title}</div>
+            <p style={{ fontSize: 15, color: 'var(--sub)', lineHeight: 1.55, margin: '6px 0 0', flex: 1, textWrap: 'pretty' }}>
+              {c.body}
+            </p>
+            <span
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 18, height: 46,
+                borderRadius: 13, background: 'var(--pri)', color: 'var(--priink)', fontSize: 16, fontWeight: 600,
+              }}
+            >
+              Open
+            </span>
+          </a>
+        ))}
       </div>
+
+      <footer style={{ fontSize: 13, color: 'var(--sub)', textAlign: 'center' }}>
+        Sample data. No real money moves.
+      </footer>
     </div>
   )
 }
 
 /** A small drawing per card, in the brand's own shapes rather than stock icons. */
 function Art({ kind }: { kind: 'deck' | 'ussd' | 'app' }) {
-  const common = { width: 84, height: 64 } as const
+  const common = { width: 70, height: 52 } as const
 
   if (kind === 'deck') {
     return (

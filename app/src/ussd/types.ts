@@ -27,6 +27,19 @@ export interface Expense {
   label: string
 }
 
+/** The same three reasons the mobile app records, so a fine raised in a meeting
+    reads identically whichever screen it is looked at from. */
+export type FineWhy = 'late' | 'absent' | 'other'
+
+export interface Fine {
+  /** Member id. */
+  id: string
+  why: FineWhy
+  amt: number
+  /** The meeting it was raised at. */
+  on: string
+}
+
 export interface Sms {
   id: string
   text: string
@@ -53,6 +66,7 @@ export interface UssdState {
   sms: Sms | null
   /** Recent receipts, newest first. */
   smsLog: Sms[]
+  fines: Fine[]
   members: Record<string, Member>
   pending: Pending[]
   groupTotal: number

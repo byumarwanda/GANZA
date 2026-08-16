@@ -42,6 +42,17 @@ export const IDS = Object.keys(MEM)
     build reads it from the group record. */
 export const STD = 10000
 
+/** The two standing fines, at the amounts the mobile app uses. */
+export const FINE_LATE = 300
+export const FINE_ABSENT = 1500
+
+/** Open fines at the start of the demo — the same two the app's fines page
+    shows, so the number a member reads on USSD matches the number in the app. */
+export const FINES: { id: string; why: 'late' | 'absent' | 'other'; amt: number; on: string }[] = [
+  { id: '05', why: 'late', amt: FINE_LATE, on: '04 Aug' },
+  { id: '02', why: 'absent', amt: FINE_ABSENT, on: '28 Jul' },
+]
+
 export const P: Record<PersonaKey, Persona> = {
   treasurer: { name: 'Honorine Mukamana', num: '0788 214 907', role: { en: 'Treasurer', rw: 'Umubitsi' }, mins: 60, mid: '07' },
   president: { name: 'Vedaste Nkurunziza', num: '0788 431 552', role: { en: 'President', rw: 'Perezida' }, mins: 45, mid: '01' },

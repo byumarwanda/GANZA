@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { defs } from './nodes'
 import { measure } from './budget'
-import { GROUP_TOTAL, MEM, STD } from './data'
+import { FINES, GROUP_TOTAL, MEM, STD } from './data'
 import type { PersonaKey } from './data'
 import type { UssdState } from './types'
 
@@ -11,6 +11,7 @@ function state(over: Partial<UssdState> = {}): UssdState {
   return {
     persona: 'treasurer', lang: 'en', node: null, reply: '', err: '', loading: false, stack: [],
     coll: [], exp: [], pinOk: false, acting: false, ctx: {}, page: 0, sms: null, smsLog: [],
+    fines: structuredClone(FINES),
     members: structuredClone(MEM),
     pending: [
       { id: 'd1', type: 'deposit', by: 'treasurer', collected: 80000, exp: 5000, net: 75000 },
@@ -30,13 +31,14 @@ describe('the node map', () => {
     const expected = [
       'pin',
       'tr_main', 'tr_coll_id', 'tr_coll_amt', 'tr_coll_other', 'tr_coll_ok', 'tr_coll_sum',
+      'tr_extra', 'tr_fine_id', 'tr_fine_why', 'tr_fine_amt', 'tr_fine_ok', 'tr_fines',
       'tr_exp_amt', 'tr_exp_cat', 'tr_exp_ok', 'tr_dep', 'tr_dep_ok',
-      'tr_loan_id', 'tr_loan_amt', 'tr_loan_rate', 'tr_loan_conf', 'tr_loan_ok',
+      'tr_loan_menu', 'tr_loan_id', 'tr_loan_amt', 'tr_loan_rate', 'tr_loan_conf', 'tr_loan_ok',
       'tr_pay_id', 'tr_pay_amt', 'tr_pay_ok', 'tr_loans', 'tr_mem',
       'mem_reg_name', 'mem_reg_phone', 'mem_reg_ok', 'mem_rm_id', 'mem_rm_conf', 'mem_rm_ok', 'mem_list',
       'ld_main', 'ld_appr', 'ld_dep', 'ld_dep_ok', 'ld_dep_no', 'ld_dep_no_ok',
       'ld_loan', 'ld_loan_ok', 'ld_report', 'ld_chg', 'ld_chg_amt', 'ld_chg_ok',
-      'mb_main', 'mb_pin', 'mb_sav', 'mb_loan', 'mb_hist', 'mb_prob', 'mb_prob_ok',
+      'mb_main', 'mb_pin', 'mb_sav', 'mb_loan', 'mb_fines', 'mb_hist', 'mb_prob', 'mb_prob_ok',
       'gs_main', 'gs_new_name', 'gs_new_count', 'gs_new_ok', 'gs_join', 'gs_join_ok', 'gs_help',
     ]
     for (const id of expected) expect(d[id], `missing node ${id}`).toBeDefined()
@@ -85,9 +87,7 @@ describe('the node map', () => {
 
   // The hard limit. 182 bytes is what the carrier will send; anything past it
   // is truncated on the handset, which on a money screen means a figure that
-  // silently loses its end. The seven-line figure in §2 is a design target —
-  // several of the spec's own screens run to eight once wrapped, and a handset
-  // scrolls those — so it is reported, not enforced.
+  // silently loses its end.
   it('keeps every screen inside the 182 bytes a carrier will send', () => {
     const over: string[] = []
     for (const lang of ['en', 'rw'] as const) {
@@ -100,6 +100,25 @@ describe('the node map', () => {
       }
     }
     expect(over).toEqual([])
+  })
+
+  // Nothing scrolls. Seven wrapped lines is what a feature phone shows at once,
+  // so a screen that needs an eighth has to lose a line or paginate — never ask
+  // someone to scroll a menu they are holding in one hand at a meeting.
+  it('fits every screen in the seven lines a handset shows at once', () => {
+    const over: string[] = []
+    for (const lang of ['en', 'rw'] as const) {
+      for (const w of ['treasurer', 'president', 'member', 'guest'] as PersonaKey[]) {
+        for (const page of [0, 1]) {
+          const d = build({ lang, persona: w, page }, w)
+          for (const [id, n] of Object.entries(d)) {
+            const b = measure(n)
+            if (b.overTarget) over.push(`${lang} ${id} (${b.rows} lines)`)
+          }
+        }
+      }
+    }
+    expect([...new Set(over)]).toEqual([])
   })
 
   // Rule 4: never paginate a menu — at most 6 options plus navigation.
@@ -133,15 +152,16 @@ describe('the navigation grammar', () => {
 describe('separation of duties', () => {
   // The single rule most likely to be lost in a rebuild.
   it('hides a leader’s own submission from their own queue', () => {
+    // The count rides in the menu label, so it is answered before any keypress.
+    const approvals = (d: ReturnType<typeof build>) => (d.ld_main.opts ?? [])[0].label
+
     // Both fixture items were submitted by the treasurer.
-    const asPresident = build({ persona: 'president' }, 'president')
-    expect(asPresident.ld_main.body?.[0]).toContain('2')
+    expect(approvals(build({ persona: 'president' }, 'president'))).toContain('(2)')
 
     // A leader acting as treasurer submitted them, so they see nothing.
     const acting = build({ persona: 'president', acting: true }, 'treasurer')
     expect(acting.tr_main).toBeDefined()
-    const actingQueue = build({ persona: 'president', acting: false }, 'treasurer')
-    expect(actingQueue.ld_main.body?.[0]).toContain('0')
+    expect(approvals(build({ persona: 'president', acting: false }, 'treasurer'))).toContain('(0)')
   })
 
   it('gives the treasurer no way into the approval queue at all', () => {

@@ -16,10 +16,11 @@ const LABEL: Partial<Record<PersonaKey, string>> = { president: 'President / Sec
 /** A wider, shorter handset than a smartphone — the shape of the cheap phones
     these groups actually carry. */
 const W = 372
-const H = 604
+const H = 620
 /** A feature-phone screen is a small window above a big keypad, not the other
-    way round. Long dialogs scroll inside it, exactly as they do on the handset. */
-const SCREEN_H = 250
+    way round. Sized to the tallest screen the node map allows — seven wrapped
+    lines plus the reply field and the two softkeys — so nothing ever scrolls. */
+const SCREEN_H = 266
 
 export function UssdDevice({ u }: { u: ReturnType<typeof useUssd> }) {
   const scale = useFitScale(W, H)
@@ -244,9 +245,9 @@ export function UssdPanel({ u }: { u: ReturnType<typeof useUssd> }) {
         </Fold>
 
         <Fold title="What to try">
-          <Note><strong style={{ color: 'var(--ink)' }}>Treasurer.</strong> 1 → member 3 → 1. That is one contribution, with its SMS receipt.</Note>
+          <Note><strong style={{ color: 'var(--ink)' }}>Treasurer.</strong> 1 → 3 → 1 → 1 → 4 → 1. Two contributions, two SMS receipts.</Note>
           <Note><strong style={{ color: 'var(--ink)' }}>President.</strong> 1 → 1 → 1. Approves the treasurer's deposit.</Note>
-          <Note><strong style={{ color: 'var(--ink)' }}>Member.</strong> 1 → PIN. Her own savings, nobody else's.</Note>
+          <Note><strong style={{ color: 'var(--ink)' }}>Member.</strong> 3 → PIN. Her fines, with dates and a total.</Note>
         </Fold>
 
         <Fold title="Screen budget">
@@ -288,8 +289,12 @@ function Dialog({ u }: { u: ReturnType<typeof useUssd> }) {
       role="dialog"
       aria-live="polite"
       style={{
+        // Nothing scrolls. Every screen is built to fit the seven lines a
+        // handset shows, and a list that cannot offers Next instead — so if
+        // anything ever overflows here it is a bug to fix in the node, not
+        // something to hide behind a scrollbar.
         background: 'var(--card)', borderRadius: 13, margin: 1,
-        animation: 'rise .16s ease', maxHeight: 'calc(100% - 2px)', overflowY: 'auto',
+        animation: 'rise .16s ease', maxHeight: 'calc(100% - 2px)', overflow: 'hidden',
       }}
     >
       {st.loading ? (
@@ -311,17 +316,17 @@ function Dialog({ u }: { u: ReturnType<typeof useUssd> }) {
         </>
       ) : node ? (
         <>
-          <div style={{ padding: '16px 18px 12px' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 7, textWrap: 'balance' }}>{node.head}</div>
+          <div style={{ padding: '13px 16px 10px' }}>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6, textWrap: 'balance' }}>{node.head}</div>
 
             {(node.body ?? []).map((b, i) => (
-              <div key={i} style={{ fontSize: 14, lineHeight: 1.45, whiteSpace: 'pre-line' }}>{b}</div>
+              <div key={i} style={{ fontSize: 14, lineHeight: 1.38, whiteSpace: 'pre-line' }}>{b}</div>
             ))}
 
             {(node.opts ?? []).length > 0 && (
-              <div style={{ marginTop: (node.body ?? []).length ? 9 : 0 }}>
+              <div style={{ marginTop: (node.body ?? []).length ? 7 : 0 }}>
                 {(node.opts ?? []).map((o) => (
-                  <div key={o.k} style={{ fontSize: 14, lineHeight: 1.5 }}>
+                  <div key={o.k} style={{ fontSize: 14, lineHeight: 1.42 }}>
                     <span style={{ fontVariantNumeric: 'tabular-nums', fontWeight: 700 }}>{o.k}</span> {o.label}
                   </div>
                 ))}
@@ -329,11 +334,11 @@ function Dialog({ u }: { u: ReturnType<typeof useUssd> }) {
             )}
 
             {node.input && (
-              <div style={{ fontSize: 14, color: 'var(--sub)', marginTop: 9 }}>{node.input.prompt}</div>
+              <div style={{ fontSize: 14, color: 'var(--sub)', marginTop: 7 }}>{node.input.prompt}</div>
             )}
 
             {node.foot && (
-              <div style={{ fontSize: 12, color: 'var(--sub)', marginTop: 9 }}>{node.foot}</div>
+              <div style={{ fontSize: 12, color: 'var(--sub)', marginTop: 7 }}>{node.foot}</div>
             )}
 
             {!node.end && (
@@ -346,7 +351,7 @@ function Dialog({ u }: { u: ReturnType<typeof useUssd> }) {
                 autoFocus
                 aria-label={node.input?.prompt ?? 'Reply'}
                 style={{
-                  width: '100%', marginTop: 10, height: 38, borderRadius: 9,
+                  width: '100%', marginTop: 8, height: 34, borderRadius: 9,
                   border: '1.5px solid var(--line)', background: 'var(--bg)', padding: '0 11px',
                   fontSize: 16, outline: 'none', fontVariantNumeric: 'tabular-nums', color: 'var(--ink)',
                 }}
@@ -383,7 +388,7 @@ function DialogButton({ onClick, strong, children }: { onClick: () => void; stro
     <button
       onClick={onClick}
       style={{
-        flex: 1, height: 42, border: 'none', background: 'none', cursor: 'pointer',
+        flex: 1, height: 38, border: 'none', background: 'none', cursor: 'pointer',
         fontSize: 13, fontWeight: 700, letterSpacing: '.06em',
         color: strong ? 'var(--pri)' : 'var(--sub)',
       }}
