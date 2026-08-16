@@ -13,7 +13,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.png', 'favicon.svg'],
       workbox: {
-        globPatterns: ['**/*.{js,css,html,woff2,png,svg}'],
+        // The deck is precached with everything else, so "works offline" covers
+        // the whole submission and not just the two demos.
+        globPatterns: ['**/*.{js,css,html,woff2,png,svg,pdf}'],
       },
       manifest: {
         name: 'Ganza',

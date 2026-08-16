@@ -13,7 +13,7 @@ three ways in, and every page after it keeps a **Welcome** tab so there is alway
 
 | | What it is | Where |
 |---|---|---|
-| **Pitch deck** | The problem, the users, the payment flow. | `#/deck` · `Ganza Two Pager -source-.html` |
+| **Pitch deck** | The problem, the users, the payment flow. | `#/deck` · `Ganza Pitch Two Pager.pdf` |
 | **USSD demo** | The whole product on a feature phone, over `*384*48293#`. Four pathways, routed by SIM. | `#/ussd` · built from `00-CORE.md` and the four pathway specs |
 | **Mobile app** | The same logbook with room to breathe. Installs to the home screen, works offline. | `#/app` · built from `Ganza - Hand off/` |
 
