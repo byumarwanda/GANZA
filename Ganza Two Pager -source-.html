@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ganza — Two Pager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{--bg:#F7F6FB;--card:#FFFFFF;--ink:#232232;--sub:#6E6C7E;--line:rgba(35,34,50,.14);--chip:#EDECF4;--pri:#5A55D6;--priink:#F7F6FE;--pribg:#EDECFB;--acc:#D69A2D;--ok:#3F6B2E;--okbg:#E7EFDF;--red:#B3261E}
+*{box-sizing:border-box}
+body{margin:0;background:#DFDEE9;font-family:'Figtree',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:#5A55D6}
+a:hover{color:#403BB0}
+.sheet{display:flex;flex-direction:column;align-items:center;gap:24px;padding:32px 16px}
+.page{width:210mm;height:297mm;overflow:hidden;box-shadow:0 12px 40px rgba(35,34,50,.18)}
+@page{size:A4 portrait;margin:0}
+@media print{
+  body{background:#fff}
+  .sheet{gap:0;padding:0}
+  .page{box-shadow:none;break-after:page;page-break-after:always}
+  .page:last-child{break-after:auto;page-break-after:auto}
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <section class="page" id="p1" style="background:var(--bg);color:var(--ink);padding:52px 54px 44px;display:flex;flex-direction:column;position:relative;overflow:hidden;font-size:11px;line-height:1.45">
+    <svg width="420" height="60" viewBox="0 0 420 60" style="position:absolute;right:-30px;top:120px;opacity:.13" aria-hidden="true"><path d="M10 48 L48 12 L86 48 L124 12 L162 48 L200 12 L238 48 L276 12 L314 48 L352 12 L390 48" fill="none" stroke="var(--acc)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding-bottom:18px;border-bottom:2px solid var(--ink);position:relative">
+      <div style="display:flex;align-items:center;gap:14px">
+        <svg width="42" height="46" viewBox="60 40 440 480" aria-hidden="true"><path d="M 280 69 L 420 279 L 140 279 Z" fill="var(--ink)"></path><path d="M 128 303 L 432 303 L 376 491 L 184 491 Z" fill="var(--ink)"></path><path d="M 172 401 L 208 365 L 244 401 L 280 365 L 316 401 L 352 365 L 388 401" fill="none" stroke="var(--acc)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <div>
+          <div style="font-family:'Archivo',sans-serif;font-size:34px;font-weight:700;letter-spacing:-.03em;line-height:1">Ganza</div>
+          <div style="font-size:11.5px;color:var(--sub);margin-top:5px">The ikimina notebook, on any phone. We never hold your money.</div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:10px;color:var(--sub);line-height:1.5">
+        <div style="font-weight:600;color:var(--ink);font-size:11px">Saving for the Future</div>
+        <div>FinTech Innovation Hackathon 2026</div>
+        <div style="font-family:'Archivo';font-weight:600;color:var(--pri);font-size:12px;margin-top:3px">*384*48293#</div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px">
+      <div style="display:flex;align-items:center;gap:9px">
+        <span style="font-family:'Archivo';font-size:10px;font-weight:600;color:var(--pri);letter-spacing:.16em">01</span>
+        <span style="font-size:10px;font-weight:600;color:var(--sub);letter-spacing:.16em;text-transform:uppercase">Problem statement</span>
+        <span style="flex:1;height:1px;background:var(--line)"></span>
+      </div>
+      <div style="font-size:21px;font-weight:600;letter-spacing:-.02em;line-height:1.2;margin-top:10px">Rwandans already save together. The writing down is what breaks.</div>
+      <div style="font-size:11px;color:var(--sub);margin-top:8px;max-width:560px">Ibimina run on trust and meetings. The money is handled well. The writing down is not.</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:14px">
+        
+          <div style="background:var(--card);border-radius:11px;padding:13px 13px;border-left:4px solid var(--red)">
+            <div style="font-size:12.5px;font-weight:600;letter-spacing:-.01em">Recording errors</div>
+            <div style="font-size:10.5px;color:var(--sub);line-height:1.45;margin-top:5px">“Sometimes the person writing can make a mistake and record less.” One wrong line is hard to undo.</div>
+          </div>
+        
+          <div style="background:var(--card);border-radius:11px;padding:13px 13px;border-left:4px solid var(--acc)">
+            <div style="font-size:12.5px;font-weight:600;letter-spacing:-.01em">Limited visibility</div>
+            <div style="font-size:10.5px;color:var(--sub);line-height:1.45;margin-top:5px">To know what they have saved, members must call a leader or wait for the next meeting.</div>
+          </div>
+        
+          <div style="background:var(--card);border-radius:11px;padding:13px 13px;border-left:4px solid var(--pri)">
+            <div style="font-size:12.5px;font-weight:600;letter-spacing:-.01em">Administrative burden</div>
+            <div style="font-size:10.5px;color:var(--sub);line-height:1.45;margin-top:5px">The treasurer counts, adds up, writes expenses and checks the deposit — all by hand.</div>
+          </div>
+        
+          <div style="background:var(--card);border-radius:11px;padding:13px 13px;border-left:4px solid var(--ok)">
+            <div style="font-size:12.5px;font-weight:600;letter-spacing:-.01em">Invisible history</div>
+            <div style="font-size:10.5px;color:var(--sub);line-height:1.45;margin-top:5px">Years of saving stay in a notebook. No bank will ever see them.</div>
+          </div>
+        
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:11px;font-size:10.5px">
+        <span style="color:var(--sub)">Who is affected</span>
+        <span style="flex:1;height:1px;background:var(--line)"></span>
+        <span style="font-weight:600">Members · Treasurers · Presidents · Secretaries</span>
+      </div>
+    </div>
+
+    <div style="margin-top:26px">
+      <div style="display:flex;align-items:center;gap:9px">
+        <span style="font-family:'Archivo';font-size:10px;font-weight:600;color:var(--pri);letter-spacing:.16em">02</span>
+        <span style="font-size:10px;font-weight:600;color:var(--sub);letter-spacing:.16em;text-transform:uppercase">Innovation &amp; differentiation</span>
+        <span style="flex:1;height:1px;background:var(--line)"></span>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:12px">
+        <div style="flex:1.25;background:var(--ink);color:var(--bg);border-radius:13px;padding:18px 18px;position:relative;overflow:hidden">
+          <svg width="220" height="40" viewBox="0 0 220 40" style="position:absolute;right:-10px;bottom:-6px;opacity:.3" aria-hidden="true"><path d="M8 32 L34 8 L60 32 L86 8 L112 32 L138 8 L164 32 L190 8 L212 26" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          <div style="font-size:17px;font-weight:600;letter-spacing:-.02em;line-height:1.25;position:relative">We never hold the group’s money.</div>
+          <div style="font-size:10.5px;color:rgba(247,246,251,.75);line-height:1.5;margin-top:8px;position:relative;max-width:290px">The group keeps using the bank, SACCO, Mobile Money or cash it already uses. A wallet makes people ask: should I trust this app with my savings? Ganza never asks that question. That is why groups can start today.</div>
+          <div style="display:flex;gap:9px;margin-top:12px;position:relative">
+            <span style="flex:1;background:rgba(247,246,251,.09);border-radius:9px;padding:9px 10px">
+              <span style="display:block;font-size:8.5px;font-weight:600;color:var(--acc);letter-spacing:.12em;text-transform:uppercase">The ritual stays</span>
+              <span style="display:block;font-size:10.5px;font-weight:500;margin-top:4px;line-height:1.35">Meet → Contribute → Discuss → Decide</span>
+            </span>
+            <span style="flex:1;background:var(--pri);border-radius:9px;padding:9px 10px">
+              <span style="display:block;font-size:8.5px;font-weight:600;color:rgba(247,246,251,.72);letter-spacing:.12em;text-transform:uppercase">The friction goes</span>
+              <span style="display:block;font-size:10.5px;font-weight:500;margin-top:4px;line-height:1.35">Counting → Totalling → Reconciling</span>
+            </span>
+          </div>
+        </div>
+        <div style="flex:1;background:var(--card);border-radius:13px;padding:16px 16px">
+          <div style="font-size:9px;font-weight:600;color:var(--sub);letter-spacing:.13em;text-transform:uppercase">The phone number decides what you see</div>
+          <div style="margin-top:9px">
+            
+              <div style="display:flex;gap:9px;padding:6px 0;border-bottom:1px solid var(--line)">
+                <span style="flex:none;width:74px;font-size:10.5px;font-weight:600;color:var(--pri)">Treasurer</span>
+                <span style="flex:1;font-size:10.5px;color:var(--sub);line-height:1.4">Meeting · Collection · Expenses · Deposit</span>
+              </div>
+            
+              <div style="display:flex;gap:9px;padding:6px 0;border-bottom:1px solid var(--line)">
+                <span style="flex:none;width:74px;font-size:10.5px;font-weight:600;color:var(--acc)">President / Secretary</span>
+                <span style="flex:1;font-size:10.5px;color:var(--sub);line-height:1.4">Approvals · Summary · Members · Loans · Act as treasurer</span>
+              </div>
+            
+              <div style="display:flex;gap:9px;padding:6px 0;border-bottom:1px solid var(--line)">
+                <span style="flex:none;width:74px;font-size:10.5px;font-weight:600;color:var(--ok)">Member</span>
+                <span style="flex:1;font-size:10.5px;color:var(--sub);line-height:1.4">Savings · Loan · Transactions</span>
+              </div>
+            
+              <div style="display:flex;gap:9px;padding:6px 0;border-bottom:1px solid var(--line)">
+                <span style="flex:none;width:74px;font-size:10.5px;font-weight:600;color:var(--sub)">New user</span>
+                <span style="flex:1;font-size:10.5px;color:var(--sub);line-height:1.4">Create ikimina · Access ikimina · Help · Hindura ururimi</span>
+              </div>
+            
+          </div>
+          <div style="background:var(--pribg);border-radius:9px;padding:10px 11px;margin-top:11px">
+            <div style="font-size:11px;font-weight:600;color:var(--pri)">Built for a real 45–60 minute meeting</div>
+            <div style="font-size:10.5px;color:var(--sub);line-height:1.45;margin-top:4px">Collect, next member, next member, expenses, deposit. The treasurer signs in once, not once per person.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:26px;flex:1;display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;gap:9px">
+        <span style="font-family:'Archivo';font-size:10px;font-weight:600;color:var(--pri);letter-spacing:.16em">03</span>
+        <span style="font-size:10px;font-weight:600;color:var(--sub);letter-spacing:.16em;text-transform:uppercase">User journey · joining to a checked record</span>
+        <span style="flex:1;height:1px;background:var(--line)"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:13px">
+        
+          <div style="background:var(--card);border-radius:11px;padding:13px;border-top:4px solid var(--pri)">
+            <div style="font-family:'Archivo';font-size:10px;font-weight:600;color:var(--pri)">01</div>
+            <div style="font-size:12.5px;font-weight:600;margin-top:4px">Join</div>
+            <div style="font-size:10px;color:var(--sub);line-height:1.45;margin-top:5px">A leader gets a short code and reads it out. Each member dials it and types their own details.</div>
+          </div>
+        
+          <div style="background:var(--card);border-radius:11px;padding:13px;border-top:4px solid var(--acc)">
+            <div style="font-family:'Archivo';font-size:10px;font-weight:600;color:var(--acc)">02</div>
+            <div style="font-size:12.5px;font-weight:600;margin-top:4px">Meeting</div>
+            <div style="font-size:10px;color:var(--sub);line-height:1.45;margin-top:5px">The member pays. The treasurer types the member number and the amount. An SMS receipt goes out.</div>
+          </div>
+        
+          <div style="background:var(--card);border-radius:11px;padding:13px;border-top:4px solid var(--pri)">
+            <div style="font-family:'Archivo';font-size:10px;font-weight:600;color:var(--pri)">03</div>
+            <div style="font-size:12.5px;font-weight:600;margin-top:4px">Continue</div>
+            <div style="font-size:10px;color:var(--sub);line-height:1.45;margin-top:5px">Straight to the next member. No going back to the main menu.</div>
+          </div>
+        
+          <div style="background:var(--card);border-radius:11px;padding:13px;border-top:4px solid var(--acc)">
+            <div style="font-family:'Archivo';font-size:10px;font-weight:600;color:var(--acc)">04</div>
+            <div style="font-size:12.5px;font-weight:600;margin-top:4px">Finish</div>
+            <div style="font-size:10px;color:var(--sub);line-height:1.45;margin-top:5px">Expenses go in. Ganza works out what is left to bank.</div>
+          </div>
+        
+          <div style="background:var(--card);border-radius:11px;padding:13px;border-top:4px solid var(--ok)">
+            <div style="font-family:'Archivo';font-size:10px;font-weight:600;color:var(--ok)">05</div>
+            <div style="font-size:12.5px;font-weight:600;margin-top:4px">Verify</div>
+            <div style="font-size:10px;color:var(--sub);line-height:1.45;margin-top:5px">The treasurer says he has banked it. The president or secretary approves it.</div>
+          </div>
+        
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;background:var(--ink);color:var(--bg);border-radius:11px;padding:13px 18px;margin-top:12px">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 3.5l7.5 3v5.6c0 4.2-3 7-7.5 8.4-4.5-1.4-7.5-4.2-7.5-8.4V6.5z"></path><path d="M8.8 12.2l2.4 2.4 4-4.6"></path></svg>
+        <span style="font-size:14px;font-weight:600;letter-spacing:-.01em">One person writes it. Another checks it.</span>
+        <span style="margin-left:auto;font-size:10px;color:rgba(247,246,251,.65)">SMS receipt after every contribution</span>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--sub);padding-top:12px;margin-top:14px;border-top:1px solid var(--line)">
+      <span>Ganza · *384*48293#</span><span>Page 1 of 2</span>
+    </div>
+  </section>
+
+  <section class="page" id="p2" style="background:var(--bg);color:var(--ink);padding:52px 54px 44px;display:flex;flex-direction:column;position:relative;overflow:hidden;font-size:11px;line-height:1.45">
+    <svg width="380" height="56" viewBox="0 0 380 56" style="position:absolute;left:-40px;bottom:100px;opacity:.12" aria-hidden="true"><path d="M10 44 L45 10 L80 44 L115 10 L150 44 L185 10 L220 44 L255 10 L290 44 L325 10 L360 44" fill="none" stroke="var(--acc)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+
+    <div>
+      <div style="display:flex;align-items:center;gap:9px">
+        <span style="font-family:'Archivo';font-size:10px;font-weight:600;color:var(--pri);letter-spacing:.16em">04</span>
+        <span style="font-size:10px;font-weight:600;color:var(--sub);letter-spacing:.16em;text-transform:uppercase">Payment process flow</span>
+        <span style="flex:1;height:1px;background:var(--line)"></span>
+      </div>
+      <div style="font-size:19px;font-weight:600;letter-spacing:-.02em;line-height:1.25;margin-top:9px">Ganza never touches the money. It records who paid, what was spent, and who approved.</div>
+      <div style="display:flex;align-items:stretch;gap:5px;margin-top:12px">
+        
+          <div style="flex:1;display:flex;align-items:center;gap:5px">
+            <div style="flex:1;background:var(--card);color:var(--ink);border-radius:10px;padding:11px 9px;min-height:80px;display:flex;flex-direction:column">
+              <div style="font-size:7.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;opacity:.72">Member</div>
+              <div style="font-size:10px;font-weight:600;line-height:1.3;margin-top:auto">Contributes money</div>
+            </div>
+            
+              <span style="flex:none;font-size:11px;color:var(--sub)">→</span>
+            
+          </div>
+        
+          <div style="flex:1;display:flex;align-items:center;gap:5px">
+            <div style="flex:1;background:var(--card);color:var(--ink);border-radius:10px;padding:11px 9px;min-height:80px;display:flex;flex-direction:column">
+              <div style="font-size:7.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;opacity:.72">Treasurer</div>
+              <div style="font-size:10px;font-weight:600;line-height:1.3;margin-top:auto">Records the contribution</div>
+            </div>
+            
+              <span style="flex:none;font-size:11px;color:var(--sub)">→</span>
+            
+          </div>
+        
+          <div style="flex:1;display:flex;align-items:center;gap:5px">
+            <div style="flex:1;background:var(--pri);color:var(--priink);border-radius:10px;padding:11px 9px;min-height:80px;display:flex;flex-direction:column">
+              <div style="font-size:7.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;opacity:.72">Ganza</div>
+              <div style="font-size:10px;font-weight:600;line-height:1.3;margin-top:auto">Balances + SMS receipt</div>
+            </div>
+            
+              <span style="flex:none;font-size:11px;color:var(--sub)">→</span>
+            
+          </div>
+        
+          <div style="flex:1;display:flex;align-items:center;gap:5px">
+            <div style="flex:1;background:var(--card);color:var(--ink);border-radius:10px;padding:11px 9px;min-height:80px;display:flex;flex-direction:column">
+              <div style="font-size:7.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;opacity:.72">Meeting</div>
+              <div style="font-size:10px;font-weight:600;line-height:1.3;margin-top:auto">Expenses recorded</div>
+            </div>
+            
+              <span style="flex:none;font-size:11px;color:var(--sub)">→</span>
+            
+          </div>
+        
+          <div style="flex:1;display:flex;align-items:center;gap:5px">
+            <div style="flex:1;background:var(--pri);color:var(--priink);border-radius:10px;padding:11px 9px;min-height:80px;display:flex;flex-direction:column">
+              <div style="font-size:7.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;opacity:.72">Ganza</div>
+              <div style="font-size:10px;font-weight:600;line-height:1.3;margin-top:auto">Net deposit amount</div>
+            </div>
+            
+              <span style="flex:none;font-size:11px;color:var(--sub)">→</span>
+            
+          </div>
+        
+          <div style="flex:1;display:flex;align-items:center;gap:5px">
+            <div style="flex:1;background:var(--card);color:var(--ink);border-radius:10px;padding:11px 9px;min-height:80px;display:flex;flex-direction:column">
+              <div style="font-size:7.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;opacity:.72">Treasurer</div>
+              <div style="font-size:10px;font-weight:600;line-height:1.3;margin-top:auto">Banks it the group’s usual way</div>
+            </div>
+            
+              <span style="flex:none;font-size:11px;color:var(--sub)">→</span>
+            
+          </div>
+        
+          <div style="flex:1;display:flex;align-items:center;gap:5px">
+            <div style="flex:1;background:var(--ink);color:var(--bg);border-radius:10px;padding:11px 9px;min-height:80px;display:flex;flex-direction:column">
+              <div style="font-size:7.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;opacity:.72">President / Secretary</div>
+              <div style="font-size:10px;font-weight:600;line-height:1.3;margin-top:auto">Approves it. Now it is final.</div>
+            </div>
+            
+          </div>
+        
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <div style="flex:1;background:var(--card);border-radius:11px;padding:12px 14px;border-left:4px solid var(--acc)">
+          <div style="font-size:11px;font-weight:600">Exception built in</div>
+          <div style="font-size:10px;color:var(--sub);line-height:1.45;margin-top:4px">If the treasurer is away, the president or secretary can stand in. They still cannot approve their own deposit — the other leader does.</div>
+        </div>
+        <div style="flex:1;background:var(--pribg);border-radius:11px;padding:12px 14px">
+          <div style="font-size:11px;font-weight:600;color:var(--pri)">Where money actually moves</div>
+          <div style="font-size:10px;color:var(--sub);line-height:1.45;margin-top:4px">Through the group’s own bank, SACCO, Mobile Money or cash. Ganza only records the amount, the receipt and who approved it.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:26px">
+      <div style="display:flex;align-items:center;gap:9px">
+        <span style="font-family:'Archivo';font-size:10px;font-weight:600;color:var(--pri);letter-spacing:.16em">05</span>
+        <span style="font-size:10px;font-weight:600;color:var(--sub);letter-spacing:.16em;text-transform:uppercase">Readiness for testing &amp; deployment</span>
+        <span style="flex:1;height:1px;background:var(--line)"></span>
+      </div>
+      <div style="display:flex;gap:11px;margin-top:12px">
+        <div style="flex:1.35;background:var(--card);border-radius:12px;padding:15px 16px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <span style="font-size:9px;font-weight:600;color:var(--sub);letter-spacing:.12em;text-transform:uppercase">Functional USSD prototype</span>
+            <span style="font-family:'Archivo';font-size:16px;font-weight:700;letter-spacing:-.02em">*384*48293#</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 14px;margin-top:10px">
+            
+              <div style="display:flex;align-items:center;gap:6px;font-size:10px"><span style="flex:none;color:var(--ok);font-weight:600">✓</span>Role-based interfaces</div>
+            
+              <div style="display:flex;align-items:center;gap:6px;font-size:10px"><span style="flex:none;color:var(--ok);font-weight:600">✓</span>Member journey</div>
+            
+              <div style="display:flex;align-items:center;gap:6px;font-size:10px"><span style="flex:none;color:var(--ok);font-weight:600">✓</span>Treasurer workflow</div>
+            
+              <div style="display:flex;align-items:center;gap:6px;font-size:10px"><span style="flex:none;color:var(--ok);font-weight:600">✓</span>President / secretary workflow</div>
+            
+              <div style="display:flex;align-items:center;gap:6px;font-size:10px"><span style="flex:none;color:var(--ok);font-weight:600">✓</span>PIN protection</div>
+            
+              <div style="display:flex;align-items:center;gap:6px;font-size:10px"><span style="flex:none;color:var(--ok);font-weight:600">✓</span>Contribution collection</div>
+            
+              <div style="display:flex;align-items:center;gap:6px;font-size:10px"><span style="flex:none;color:var(--ok);font-weight:600">✓</span>Meeting expenses</div>
+            
+              <div style="display:flex;align-items:center;gap:6px;font-size:10px"><span style="flex:none;color:var(--ok);font-weight:600">✓</span>Net deposit calculation</div>
+            
+              <div style="display:flex;align-items:center;gap:6px;font-size:10px"><span style="flex:none;color:var(--ok);font-weight:600">✓</span>Deposit approval</div>
+            
+              <div style="display:flex;align-items:center;gap:6px;font-size:10px"><span style="flex:none;color:var(--ok);font-weight:600">✓</span>SMS confirmation</div>
+            
+          </div>
+          <div style="font-size:10px;color:var(--sub);margin-top:11px;padding-top:9px;border-top:1px solid var(--line)"><span style="font-weight:600;color:var(--ink)">Technology · </span>USSD → Africa’s Talking → Backend → Database → SMS</div>
+        </div>
+        <div style="flex:1;background:var(--card);border-radius:12px;padding:15px 16px">
+          <div style="font-size:9px;font-weight:600;color:var(--sub);letter-spacing:.12em;text-transform:uppercase">Deployment path</div>
+          <div style="margin-top:9px">
+            
+              <div style="display:flex;align-items:center;gap:8px;padding:5px 0">
+                <span style="flex:none;width:7px;height:7px;border-radius:50%;background:var(--ok)"></span>
+                <span style="font-size:10.5px;font-weight:500">Prototype</span>
+                <span style="margin-left:auto;font-size:9.5px;color:var(--sub)">live now</span>
+              </div>
+            
+              <div style="display:flex;align-items:center;gap:8px;padding:5px 0">
+                <span style="flex:none;width:7px;height:7px;border-radius:50%;background:var(--pri)"></span>
+                <span style="font-size:10.5px;font-weight:500">Real USSD service</span>
+                <span style="margin-left:auto;font-size:9.5px;color:var(--sub)">~$200 / month</span>
+              </div>
+            
+              <div style="display:flex;align-items:center;gap:8px;padding:5px 0">
+                <span style="flex:none;width:7px;height:7px;border-radius:50%;background:var(--acc)"></span>
+                <span style="font-size:10.5px;font-weight:500">RURA dedicated code</span>
+                <span style="margin-left:auto;font-size:9.5px;color:var(--sub)">in progress</span>
+              </div>
+            
+              <div style="display:flex;align-items:center;gap:8px;padding:5px 0">
+                <span style="flex:none;width:7px;height:7px;border-radius:50%;background:var(--sub)"></span>
+                <span style="font-size:10.5px;font-weight:500">Real-group testing</span>
+                <span style="margin-left:auto;font-size:9.5px;color:var(--sub)">Kigali ibimina</span>
+              </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:26px">
+      <div style="display:flex;align-items:center;gap:9px">
+        <span style="font-family:'Archivo';font-size:10px;font-weight:600;color:var(--pri);letter-spacing:.16em">06</span>
+        <span style="font-size:10px;font-weight:600;color:var(--sub);letter-spacing:.16em;text-transform:uppercase">Impact, scale and how we earn</span>
+        <span style="flex:1;height:1px;background:var(--line)"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px">
+        <div style="background:var(--card);border-radius:12px;padding:14px 15px">
+          <div style="font-size:9px;font-weight:600;color:var(--pri);letter-spacing:.12em;text-transform:uppercase">First</div>
+          <div style="font-size:13.5px;font-weight:600;letter-spacing:-.01em;margin-top:5px">Make the meeting easier</div>
+          <div style="margin-top:8px">
+            
+              <div style="display:flex;align-items:center;gap:7px;font-size:10.5px;padding:2px 0"><span style="color:var(--ok);font-weight:600">↓</span>Recording errors</div>
+            
+              <div style="display:flex;align-items:center;gap:7px;font-size:10.5px;padding:2px 0"><span style="color:var(--ok);font-weight:600">↓</span>Treasurer workload</div>
+            
+              <div style="display:flex;align-items:center;gap:7px;font-size:10.5px;padding:2px 0"><span style="color:var(--pri);font-weight:600">↑</span>Member visibility</div>
+            
+              <div style="display:flex;align-items:center;gap:7px;font-size:10.5px;padding:2px 0"><span style="color:var(--pri);font-weight:600">↑</span>Trust in records</div>
+            
+          </div>
+        </div>
+        <div style="background:var(--card);border-radius:12px;padding:14px 15px">
+          <div style="font-size:9px;font-weight:600;color:var(--acc);letter-spacing:.12em;text-transform:uppercase">Then</div>
+          <div style="font-size:13.5px;font-weight:600;letter-spacing:-.01em;margin-top:5px">Make saving visible</div>
+          <div style="font-size:11px;font-weight:600;margin-top:8px">Saving → Repayment → Verified history</div>
+          <div style="font-size:10px;color:var(--sub);line-height:1.45;margin-top:5px">This record stays with the member even after the ikimina closes. With their permission, it can one day help them get credit.</div>
+        </div>
+        <div style="background:var(--ink);color:var(--bg);border-radius:12px;padding:14px 15px">
+          <div style="font-size:9px;font-weight:600;color:var(--acc);letter-spacing:.12em;text-transform:uppercase">Then</div>
+          <div style="font-size:13.5px;font-weight:600;letter-spacing:-.01em;margin-top:5px">Scale</div>
+          <div style="margin-top:8px">
+            
+              <div style="display:flex;gap:8px;font-size:10px;line-height:1.4;padding:2px 0"><span style="font-family:'Archivo';font-weight:600;color:var(--acc);flex:none">01</span><span>Test with real ibimina in Kigali</span></div>
+            
+              <div style="display:flex;gap:8px;font-size:10px;line-height:1.4;padding:2px 0"><span style="font-family:'Archivo';font-weight:600;color:var(--acc);flex:none">02</span><span>Work with BNR on the regulatory pathway</span></div>
+            
+              <div style="display:flex;gap:8px;font-size:10px;line-height:1.4;padding:2px 0"><span style="font-family:'Archivo';font-weight:600;color:var(--acc);flex:none">03</span><span>BNR support, NGOs, impact investors</span></div>
+            
+              <div style="display:flex;gap:8px;font-size:10px;line-height:1.4;padding:2px 0"><span style="font-family:'Archivo';font-weight:600;color:var(--acc);flex:none">04</span><span>Demo USSD → production → dedicated code</span></div>
+            
+              <div style="display:flex;gap:8px;font-size:10px;line-height:1.4;padding:2px 0"><span style="font-family:'Archivo';font-weight:600;color:var(--acc);flex:none">05</span><span>USSD first — no smartphone needed</span></div>
+            
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <div style="flex:1;background:var(--pri);color:var(--priink);border-radius:12px;padding:15px 17px">
+          <div style="font-size:9px;font-weight:600;color:rgba(247,246,251,.72);letter-spacing:.12em;text-transform:uppercase">Business model</div>
+          <div style="font-size:18px;font-weight:600;letter-spacing:-.02em;margin-top:5px">A flat fee per member. Never a cut of savings.</div>
+          <div style="font-size:10px;color:rgba(247,246,251,.8);line-height:1.45;margin-top:6px">Taking a cut when someone touches their own savings is the fastest way to lose trust. We charge a flat fee for each member instead. What that fee should be is the most sensitive question we have, and we are asking real ibimina before we answer it.</div>
+        </div>
+        <div style="flex:1;background:var(--card);border-radius:12px;padding:15px 17px">
+          <div style="font-size:9px;font-weight:600;color:var(--sub);letter-spacing:.12em;text-transform:uppercase">Future · payment intelligence</div>
+          <div style="font-size:10.5px;color:var(--sub);margin-top:6px">Today: Record → Deposit → Human confirmation</div>
+          <div style="font-size:11.5px;font-weight:600;margin-top:4px;line-height:1.4">Next: Record → Deposit → <span style="color:var(--pri)">eKash confirmation</span> → Automatic reconciliation</div>
+          <div style="font-size:10px;color:var(--sub);line-height:1.45;margin-top:6px">Then Ganza knows not only what was written, but when the money truly landed.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:auto;padding-top:10px">
+      <div style="display:flex;align-items:center;gap:14px;background:var(--ink);color:var(--bg);border-radius:13px;padding:14px 18px;position:relative;overflow:hidden">
+        <svg width="230" height="40" viewBox="0 0 230 40" style="position:absolute;right:-12px;bottom:-7px;opacity:.28" aria-hidden="true"><path d="M8 31 L34 9 L60 31 L86 9 L112 31 L138 9 L164 31 L190 9 L216 31" fill="none" stroke="var(--acc)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <svg width="30" height="33" viewBox="60 40 440 480" style="flex:none;position:relative" aria-hidden="true"><path d="M 280 69 L 420 279 L 140 279 Z" fill="var(--bg)"></path><path d="M 128 303 L 432 303 L 376 491 L 184 491 Z" fill="var(--bg)"></path><path d="M 172 401 L 208 365 L 244 401 L 280 365 L 316 401 L 352 365 L 388 401" fill="none" stroke="var(--acc)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <div style="position:relative;flex:1;min-width:0">
+          <div style="font-size:12.5px;font-weight:600;letter-spacing:-.01em;line-height:1.35;max-width:520px">We are not asking anyone to move their money. We are making the place they already trust easier to write down, and easier to check.</div>
+          <div style="font-size:9.5px;color:rgba(247,246,251,.62);margin-top:4px">Ganza · *384*48293# · Page 2 of 2</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
