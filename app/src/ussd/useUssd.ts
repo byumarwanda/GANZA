@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { GROUP_TOTAL, MEM, P, STD } from './data'
+import { FINES, GROUP_TOTAL, MEM, P, STD } from './data'
 import type { Lang, PersonaKey } from './data'
 import { defs } from './nodes'
 import type { Actions, UssdNode, UssdState } from './types'
@@ -27,6 +27,7 @@ function fresh(persona: PersonaKey, lang: Lang): UssdState {
     page: 0,
     sms: null,
     smsLog: [],
+    fines: structuredClone(FINES),
     members: structuredClone(MEM),
     pending: [
       { id: 'd1', type: 'deposit', by: 'treasurer', collected: 80000, exp: 5000, net: 75000 },

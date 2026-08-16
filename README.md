@@ -113,11 +113,18 @@ Every screen in `00-CORE.md`, `01-TREASURER.md`, `02-PRESIDENT-SECRETARY.md`, `0
 - **The money rules** are enforced and tested: the 3× loan ceiling, no second loan while one is
   open, no payment above the balance, no removal with an open loan, one contribution per member per
   meeting.
+- **Nothing scrolls, and nothing is padded.** Every screen fits the seven lines a handset shows at
+  once; a list that cannot — members, loans, fines, history — shows what fits and offers `99 Next`.
+  Two tests hold the line, in both languages.
+- **Running totals are asked for, not pushed.** The collection path carries the member, the amount
+  and the way onward, and nothing else: `id → 1 → 1` a member. The day's figures live on **Today's
+  summary** and on the deposit screen, where money is actually about to move.
 - **The screen budget is visible.** Each screen reports its size against the 182 bytes a carrier
   will actually send in one USSD message. Go over it and the handset simply cuts the text off — on a
   money screen that means a figure losing its last digits. It is a size limit, not a price: USSD is
-  billed per session, not per byte. `app/src/ussd/budget.ts` measures it and a test holds every
-  screen inside it, in both languages.
+  billed per session, not per byte. `app/src/ussd/budget.ts` measures it.
+- **The same features as the app.** Fines are recorded, listed and totalled on USSD too, at the same
+  amounts, so "My fines" answers the same question on a feature phone as it does on a smartphone.
 - **The president and the secretary are one choice.** They reach the same menu and approve the same
   things, so the demo's SIM picker offers `President / Secretary` rather than two near-identical
   entries. Both numbers still route correctly.
@@ -216,8 +223,9 @@ illustration, and each noted in a comment at the point of the change:
   26-character line `00-CORE.md` §2 sets. The queue now follows the dense-list rule the core spec
   states for exactly this case: no unit on the row, unit in the footer.
 - `00-CORE.md` §2 calls 7 lines "hard", but several of the specs' own screens run to eight or nine
-  once wrapped — `tr_main` is nine. The enforced limit is therefore the 182 bytes a carrier will
-  send; the line count is reported next to the demo as a target.
+  once wrapped — the spec's own `tr_main` is nine. The screens were rewritten to obey the rule
+  rather than the illustration: menus were regrouped, running totals moved behind "Today's summary",
+  and long lists paginate. Both limits are now enforced by test — 7 lines and 182 bytes.
 
 Two notes on the port:
 

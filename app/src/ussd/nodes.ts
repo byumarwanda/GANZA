@@ -4,8 +4,11 @@
 // Screen budget: 7 lines × 26 characters (00-CORE.md §2). Line 1 is the header
 // and never wraps; options are one line each; lists paginate, menus never do.
 
-import { F, GROUP_NAME, IDS, P, SUPPORT, USSD_CODE, DEMO_PIN } from './data'
-import type { Actions, UssdNode, UssdState } from './types'
+import { F, FINE_ABSENT, FINE_LATE, GROUP_NAME, IDS, P, SUPPORT, USSD_CODE, DEMO_PIN } from './data'
+import type { Actions, Fine, FineWhy, UssdNode, UssdOption, UssdState } from './types'
+
+/** The meeting the demo is sitting in. Every date in the fixture hangs off it. */
+const MEETING = '04 Aug'
 
 export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secretary' | 'member' | 'guest'):
   Record<string, UssdNode> {
@@ -27,6 +30,35 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
 
   const withLoans = IDS.filter((i) => MEM[i].loan > 0)
   const page = <X,>(rows: X[], per: number) => rows.slice(S.page * per, S.page * per + per)
+
+  /** A list never scrolls. It shows the rows that fit and offers the rest
+      behind Next — the handset's own behaviour, and the only one that works
+      when the screen is eight lines tall. */
+  const pager = (total: number, per: number): UssdOption[] => {
+    const last = Math.max(0, Math.ceil(total / per) - 1)
+    const out: UssdOption[] = []
+    if (S.page < last) {
+      out.push({ k: '99', label: T('Next', 'Ibikurikira'), go: (a) => a.set({ page: a.state.page + 1, reply: '' }) })
+    }
+    if (S.page > 0) {
+      out.push({ k: '98', label: T('Previous', 'Ibibanza'), go: (a) => a.set({ page: Math.max(0, a.state.page - 1), reply: '' }) })
+    }
+    return out
+  }
+
+  const pageTag = (total: number, per: number) => {
+    const pages = Math.max(1, Math.ceil(total / per))
+    return pages > 1 ? ' ' + (S.page + 1) + '/' + pages : ''
+  }
+
+  const fineWhy = (w: FineWhy) =>
+    w === 'late' ? T('Late', 'Gutinda') : w === 'absent' ? T('Absent', 'Kutaza') : T('Other', 'Ikindi')
+
+  const finesOf = (id: string) => S.fines.filter((f) => f.id === id)
+  const finesTotal = (rows: Fine[]) => rows.reduce((a, f) => a + f.amt, 0)
+  /** Fines raised at this meeting. Not added to the deposit — a fine is settled
+      in cash at the table, exactly as the paper logbook has it. */
+  const fineTotalToday = finesTotal(S.fines.filter((f) => f.on === MEETING))
 
   const d: Record<string, UssdNode> = {}
 
@@ -62,36 +94,34 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
 
   // ------------------------------------------------------------ treasurer
 
+  // Six entries, ordered by how often a treasurer reaches for them in a meeting.
+  // Loans and member admin are grouped behind one door each, because neither is
+  // touched more than once or twice a sitting; the running totals used to sit
+  // here and now live behind "Today", where they are asked for rather than
+  // pushed at someone who is halfway through a roll-call.
   d.tr_main = {
     head: T('TREASURER · ', 'UMUBITSI · ') + 'Honorine',
-    body: [
-      ...(S.acting ? [T('Acting as Treasurer (', 'Ukora nk’Umubitsi (') + me.role[S.lang] + ')'] : []),
-      T('Collected today: ', 'Uyu munsi: ') + F(collTotal) + ' RWF',
-    ],
+    body: S.acting ? [T('Acting as Treasurer', 'Ukora nk’Umubitsi')] : [],
     opts: [
       { k: '1', label: T('Collect contributions', 'Kwakira umusanzu'), go: (a) => { a.set({ page: 0 }); a.go('tr_coll_id') } },
-      { k: '2', label: T('Record an expense', 'Kwandika ikiguzi'), go: (a) => a.go('tr_exp_amt') },
-      { k: '3', label: T('Submit deposit', 'Kohereza ubwizigame'), go: (a) => a.go('tr_dep') },
-      { k: '4', label: T('Give a loan', 'Gutanga inguzanyo'), go: (a) => a.go('tr_loan_id') },
-      { k: '5', label: T('Receive loan payment', 'Kwakira ubwishyu'), go: (a) => a.go('tr_pay_id') },
-      { k: '6', label: T('Loan list', 'Inguzanyo zose'), go: (a) => { a.set({ page: 0 }); a.go('tr_loans') } },
-      { k: '7', label: T('Members', 'Abanyamuryango'), go: (a) => a.go('tr_mem') },
+      { k: '2', label: T('Fines and expenses', 'Amande n’ibiguzi'), go: (a) => a.go('tr_extra') },
+      { k: '3', label: T('Close and deposit', 'Gusoza no kubitsa'), go: (a) => a.go('tr_dep') },
+      { k: '4', label: T('Loans', 'Inguzanyo'), go: (a) => a.go('tr_loan_menu') },
+      { k: '5', label: T('Members', 'Abanyamuryango'), go: (a) => a.go('tr_mem') },
+      { k: '6', label: T('Today’s summary', 'Incamake y’uyu munsi'), go: (a) => a.go('tr_coll_sum') },
     ],
     back: false,
   }
 
-  // The hot path: eight contributions in under three minutes without losing
-  // your place. Roughly four keypresses per member.
+  // The hot path. Nothing on these three screens but the member, the amount and
+  // the way onward: id, 1, 1, id, 1, 1 — two keypresses a member once the id is
+  // typed. Totals and counts are deliberately absent; they are on "Today".
   d.tr_coll_id = {
-    head: T('COLLECT · member ID', 'KWAKIRA · ID'),
-    body: [
-      T('Recorded: ', 'Byanditswe: ') + S.coll.length + '/' + nMem + '  ·  ' + F(collTotal) + ' RWF',
-      T('IDs 01-08', 'ID 01-08'),
-    ],
+    head: T('COLLECT', 'KWAKIRA'),
     input: {
       // `0` finishes rather than going back. This is the one documented
       // exception to the navigation grammar, and the prompt states it.
-      prompt: T('Member ID (0 = finish):', 'ID (0 = kurangiza):'),
+      prompt: T('Member ID (0 = done):', 'ID (0 = kurangiza):'),
       on(v, a) {
         if (v === '0') return a.go('tr_coll_sum', false)
         const id = v.padStart(2, '0')
@@ -107,15 +137,13 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
 
   d.tr_coll_amt = {
     head: name(ctxId()) + ' · ID ' + ctxId(),
-    body: [
-      T('Standard contribution', 'Umusanzu usanzwe') + ': ' + F(S.contribution) + ' RWF',
-      // Shown to catch a mis-keyed id before money is attached to it.
-      T('Savings so far: ', 'Ubwizigame: ') + F(MEM[ctxId()]?.sav ?? 0) + ' RWF',
-    ],
     opts: [
       // The amount is carried in the label so confirming is a decision, not a leap.
       { k: '1', label: T('Confirm ', 'Emeza ') + F(S.contribution) + ' RWF', go: (a) => a.record(ctxId(), S.contribution) },
       { k: '2', label: T('Other amount', 'Andi mafaranga'), go: (a) => a.go('tr_coll_other') },
+      // The member is already named, so a fine costs one key here and a whole
+      // re-entry anywhere else. This is where lateness is actually noticed.
+      { k: '3', label: T('Add a fine', 'Ongeraho amande'), go: (a) => a.go('tr_fine_why') },
     ],
     foot: T('0 Back', '0 Subira inyuma'),
   }
@@ -135,43 +163,112 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
     },
   }
 
-  // The busiest screen in the product, so it is trimmed to seven wrapped lines.
-  // The spec writes "SMS receipt sent to …" and repeats RWF on the total, which
-  // wraps to eight on a 26-character screen; the unit is already on the line
-  // above, and the header already says the receipt went.
+  // A receipt, not a report. One line saying what was just saved, then straight
+  // back to the next member.
   d.tr_coll_ok = {
     head: T('RECORDED', 'BYANDITSWE') + ' ✓',
-    body: [
-      name(ctxId()) + ' · ' + F(ctxAmt()) + ' RWF',
-      T('SMS to ', 'SMS kuri ') + '078• ••• ' + (ctxId() ? String(137 + Number(ctxId()) * 61) : ''),
-      T('Collected: ', 'Byose: ') + F(collTotal) + ' · ' + S.coll.length + '/' + nMem,
-    ],
+    body: [name(ctxId()) + ' · ' + F(ctxAmt()) + ' RWF'],
     opts: [
       { k: '1', label: T('Next member', 'Ukurikira'), go: (a) => a.go('tr_coll_id', false) },
-      { k: '2', label: T('Finish collection', 'Kurangiza'), go: (a) => a.go('tr_coll_sum', false) },
+      { k: '2', label: T('Done', 'Ndarangije'), go: (a) => a.home() },
     ],
   }
 
+  // The summary, kept in one place and reached on request — from the menu, or
+  // by pressing 0 at the id prompt when the roll-call is finished.
   d.tr_coll_sum = {
-    head: T('COLLECTION SUMMARY', 'INCAMAKE'),
+    head: T('TODAY', 'UYU MUNSI'),
     body: [
-      S.coll.length + '/' + nMem + T(' members paid', ' bishyuye'),
-      T('Total: ', 'Byose: ') + F(collTotal) + ' RWF',
-      T('Expenses: ', 'Ibiguzi: ') + F(expTotal) + ' RWF',
-      // Net is the figure that must match the cash in her hand, so it is shown,
-      // never assumed.
-      T('Net to deposit: ', 'Azabikwa: ') + F(net) + ' RWF',
+      T('Paid ', 'Bishyuye ') + S.coll.length + '/' + nMem + ' · ' + F(collTotal),
+      T('Fines ', 'Amande ') + F(fineTotalToday) + T(' · exp ', ' · ibiguzi ') + F(expTotal),
+      T('To deposit: ', 'Azabikwa: ') + F(net) + ' RWF',
     ],
     opts: [
-      { k: '1', label: T('Submit deposit', 'Kohereza ubwizigame'), go: (a) => a.go('tr_dep') },
+      { k: '1', label: T('Close and deposit', 'Gusoza no kubitsa'), go: (a) => a.go('tr_dep') },
       { k: '2', label: T('Collect more', 'Komeza kwakira'), go: (a) => a.go('tr_coll_id', false) },
     ],
-    foot: T('00 Main menu', '00 Menu nyamukuru'),
+  }
+
+  // Fines and expenses share a door: both are the small money that moves at a
+  // meeting, and neither is touched more than twice a sitting.
+  d.tr_extra = {
+    head: T('FINES AND EXPENSES', 'AMANDE N’IBIGUZI'),
+    opts: [
+      { k: '1', label: T('Record a fine', 'Kwandika amande'), go: (a) => a.go('tr_fine_id') },
+      { k: '2', label: T('Record an expense', 'Kwandika ikiguzi'), go: (a) => a.go('tr_exp_amt') },
+      { k: '3', label: T('Fines owed', 'Amande atarishyuwe'), go: (a) => { a.set({ page: 0 }); a.go('tr_fines') } },
+    ],
+    foot: T('0 Back', '0 Subira inyuma'),
+  }
+
+  d.tr_fine_id = {
+    head: T('FINE · member ID', 'AMANDE · ID'),
+    input: {
+      prompt: T('Member ID:', 'ID y’umunyamuryango:'),
+      on(v, a) {
+        const id = v.padStart(2, '0')
+        if (!MEM[id]) return T('No member with that ID.', 'Nta munyamuryango ufite iyo ID.')
+        a.set({ ctx: { id } })
+        a.go('tr_fine_why')
+      },
+    },
+  }
+
+  /** Raise a fine against whoever is in context, then land on the receipt. */
+  const raiseFine = (why: FineWhy, amt: number) => (a: Actions) => {
+    const id = String(a.state.ctx.id ?? '')
+    a.set({
+      fines: [...a.state.fines, { id, why, amt, on: MEETING }],
+      ctx: { ...a.state.ctx, amt, why },
+    })
+    a.sms(T('Fine of ', 'Amande ya ') + F(amt) + T(' RWF recorded for ', ' RWF yanditswe kuri ') + name(id)
+      + ' (' + fineWhy(why).toLowerCase() + ', ' + MEETING + ').')
+    a.go('tr_fine_ok', false)
+  }
+
+  d.tr_fine_why = {
+    head: name(ctxId()) + ' · ' + T('fine', 'amande'),
+    opts: [
+      { k: '1', label: T('Late ', 'Gutinda ') + F(FINE_LATE), go: raiseFine('late', FINE_LATE) },
+      { k: '2', label: T('Absent ', 'Kutaza ') + F(FINE_ABSENT), go: raiseFine('absent', FINE_ABSENT) },
+      { k: '3', label: T('Other amount', 'Andi mafaranga'), go: (a) => a.go('tr_fine_amt') },
+    ],
+    foot: T('RWF · 0 Back', 'RWF · 0 Subira'),
+  }
+
+  d.tr_fine_amt = {
+    head: T('FINE AMOUNT', 'AMANDE ANGAHE'),
+    input: {
+      prompt: T('Amount in RWF:', 'Amafaranga (RWF):'),
+      on(v, a) {
+        const n = parseInt(v.replace(/\D/g, ''), 10)
+        if (!n) return T('Enter a number.', 'Injiza umubare.')
+        raiseFine('other', n)(a)
+      },
+    },
+  }
+
+  d.tr_fine_ok = {
+    head: T('FINE RECORDED', 'AMANDE YANDITSWE') + ' ✓',
+    body: [name(ctxId()) + ' · ' + F(ctxAmt()) + ' RWF'],
+    opts: [
+      { k: '1', label: T('Next member', 'Ukurikira'), go: (a) => a.go('tr_coll_id', false) },
+      { k: '2', label: T('Done', 'Ndarangije'), go: (a) => a.home() },
+    ],
+  }
+
+  const fineRows = S.fines
+  d.tr_fines = {
+    head: T('FINES OWED', 'AMANDE') + pageTag(fineRows.length, 4),
+    body: fineRows.length
+      ? page(fineRows, 4).map((f) => f.on + '  ' + name(f.id) + '  ' + F(f.amt))
+      : [T('No fines owed.', 'Nta mande ahari.')],
+    opts: pager(fineRows.length, 4),
+    foot: T('RWF · 0 Back', 'RWF · 0 Subira'),
   }
 
   d.tr_exp_amt = {
     head: T('RECORD EXPENSE', 'KWANDIKA IKIGUZI'),
-    body: [T('Expenses today: ', 'Ibiguzi uyu munsi: ') + F(expTotal) + ' RWF'],
     input: {
       prompt: T('Amount in RWF:', 'Amafaranga (RWF):'),
       on(v, a) {
@@ -202,25 +299,21 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
 
   d.tr_exp_ok = {
     head: T('EXPENSE RECORDED', 'IKIGUZI CYANDITSWE') + ' ✓',
-    body: [
-      F(ctxAmt()) + ' RWF',
-      T('Expenses today: ', 'Ibiguzi uyu munsi: ') + F(expTotal) + ' RWF',
-      T('Net to deposit: ', 'Azabikwa: ') + F(net) + ' RWF',
-    ],
+    body: [F(ctxAmt()) + ' RWF'],
     opts: [
       { k: '1', label: T('Add another', 'Ongeraho ikindi'), go: (a) => a.go('tr_exp_amt', false) },
-      { k: '2', label: T('Main menu', 'Menu nyamukuru'), go: (a) => a.home() },
+      { k: '2', label: T('Done', 'Ndarangije'), go: (a) => a.home() },
     ],
   }
 
+  // The one screen where the figures belong: money is about to leave the room,
+  // and the net must match the cash in her hand before she sends it.
   d.tr_dep = {
-    head: T('SUBMIT DEPOSIT', 'KOHEREZA UBWIZIGAME'),
+    head: T('CLOSE AND DEPOSIT', 'GUSOZA NO KUBITSA'),
     body: [
-      T('Collected: ', 'Byakusanyijwe: ') + F(collTotal) + ' RWF',
-      T('Expenses:  ', 'Ibiguzi:  ') + F(expTotal) + ' RWF',
-      T('NET DEPOSIT: ', 'AZABIKWA: ') + F(net) + ' RWF',
-      // Naming the approvers before the wait, not after it.
-      T('Approved by: President or Secretary', 'Byemezwa na: Perezida cyangwa Umunyamabanga'),
+      T('Collected: ', 'Byakusanyijwe: ') + F(collTotal),
+      T('Expenses:  ', 'Ibiguzi:  ') + F(expTotal),
+      T('DEPOSIT: ', 'AZABIKWA: ') + F(net) + ' RWF',
     ],
     opts: [
       {
@@ -238,20 +331,30 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
         },
       },
     ],
-    foot: T('0 Back', '0 Subira inyuma'),
+    foot: T('RWF · 0 Back', 'RWF · 0 Subira'),
   }
 
   d.tr_dep_ok = {
     head: T('SENT FOR APPROVAL', 'BYOHEREJWE KWEMEZWA'),
     body: [
       F(net) + ' RWF',
-      T('Waiting for Vedaste (President) or Yvette (Secretary).',
-        'Bitegereje Vedaste (Perezida) cyangwa Yvette (Umunyamabanga).'),
-      // The separation of duties, stated plainly to the person it constrains.
-      // Not an error message, and it must not read like one.
-      T('You cannot approve your own deposit.', 'Ntushobora kwemeza ubwizigame bwawe.'),
+      // The separation of duties, stated once, to the person it constrains.
+      T('Waiting for the President or Secretary. You cannot approve your own.',
+        'Bitegereje Perezida cyangwa Umunyamabanga. Ntushobora kwiyemeza.'),
     ],
     end: true,
+  }
+
+  // Everything about lending behind one door, in the order it happens: give,
+  // take back, look up.
+  d.tr_loan_menu = {
+    head: T('LOANS', 'INGUZANYO'),
+    opts: [
+      { k: '1', label: T('Give a loan', 'Gutanga inguzanyo'), go: (a) => a.go('tr_loan_id') },
+      { k: '2', label: T('Receive a payment', 'Kwakira ubwishyu'), go: (a) => a.go('tr_pay_id') },
+      { k: '3', label: T('Who owes what', 'Abafite umwenda'), go: (a) => { a.set({ page: 0 }); a.go('tr_loans') } },
+    ],
+    foot: T('0 Back', '0 Subira inyuma'),
   }
 
   d.tr_loan_id = {
@@ -384,26 +487,23 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
     head: T('PAYMENT RECORDED', 'UBWISHYU BWANDITSWE') + ' ✓',
     body: [
       name(ctxId()) + ' · ' + F(ctxAmt()) + ' RWF',
-      T('Remaining loan: ', 'Umwenda usigaye: ') + F(MEM[ctxId()]?.loan ?? 0) + ' RWF',
-      T('SMS receipt sent.', 'SMS yoherejwe.'),
+      T('Still owes: ', 'Asigaje: ') + F(MEM[ctxId()]?.loan ?? 0) + ' RWF',
     ],
     opts: [
       { k: '1', label: T('Another payment', 'Ubundi bwishyu'), go: (a) => a.go('tr_pay_id', false) },
-      { k: '2', label: T('Main menu', 'Menu nyamukuru'), go: (a) => a.home() },
+      { k: '2', label: T('Done', 'Ndarangije'), go: (a) => a.home() },
     ],
   }
 
-  // Lists paginate; menus never do. Five rows, because the header, footer and
-  // options claim two of the seven lines.
+  // Lists never scroll. Four rows fit beside a header, a pager and a footer;
+  // the rest is one keypress away behind Next.
   d.tr_loans = {
-    head: T('ACTIVE LOANS ', 'INGUZANYO ZIRIHO ') + '(' + withLoans.length + ')',
+    head: T('WHO OWES', 'ABAFITE UMWENDA') + pageTag(withLoans.length, 4),
     body: withLoans.length
-      ? page(withLoans, 5).map((i) => i + ' ' + MEM[i].n + '  ' + F(MEM[i].loan))
+      ? page(withLoans, 4).map((i) => i + ' ' + MEM[i].n + '  ' + F(MEM[i].loan))
       : [T('No loans outstanding.', 'Nta nguzanyo ihari.')],
-    opts: withLoans.length > 5
-      ? [{ k: '99', label: T('More', 'Ibindi'), go: (a: Actions) => a.set({ page: a.state.page + 1, reply: '' }) }]
-      : [],
-    foot: T('Amounts in RWF · 0 Back', 'Mu RWF · 0 Subira'),
+    opts: pager(withLoans.length, 4),
+    foot: T('RWF · 0 Back', 'RWF · 0 Subira'),
   }
 
   d.tr_mem = {
@@ -476,8 +576,7 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
     head: T('CONFIRM REMOVAL', 'EMEZA IVANWA'),
     body: [
       name(ctxId()) + ' · ID ' + ctxId(),
-      T('Savings to pay out: ', 'Ubwizigame bwo gusubiza: ') + F(MEM[ctxId()]?.sav ?? 0) + ' RWF',
-      T('Another admin must approve.', 'Undi muyobozi agomba kwemeza.'),
+      T('Pay out: ', 'Gusubiza: ') + F(MEM[ctxId()]?.sav ?? 0) + ' RWF',
     ],
     opts: [
       {
@@ -506,29 +605,26 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
   }
 
   d.mem_list = {
-    head: T('MEMBER LIST ', 'URUTONDE ') + (S.page + 1) + '/' + Math.ceil(nMem / 4),
+    head: T('MEMBERS', 'URUTONDE') + pageTag(nMem, 4),
     body: page(IDS, 4).map((i) => i + ' ' + MEM[i].n + '  ' + F(MEM[i].sav)),
-    opts: S.page < Math.ceil(nMem / 4) - 1
-      ? [{ k: '99', label: T('More', 'Ibindi'), go: (a: Actions) => a.set({ page: a.state.page + 1, reply: '' }) }]
-      : [{ k: '98', label: T('Previous', 'Ibibanza'), go: (a: Actions) => a.set({ page: Math.max(0, a.state.page - 1), reply: '' }) }],
-    foot: T('Savings in RWF · 0 Back', 'Ubwizigame mu RWF · 0 Subira'),
+    opts: pager(nMem, 4),
+    foot: T('Savings, RWF · 0 Back', 'Ubwizigame, RWF · 0 Subira'),
   }
 
   // -------------------------------------------------------------- leaders
 
+  // Approvals first and counted in the label, because that is the whole reason
+  // a leader dials in. The loan list moved inside the report, where the other
+  // figures already are.
   d.ld_main = {
     head: caller.role[S.lang].toUpperCase() + ' · ' + me.name.split(' ')[0],
-    // A count, not a list. This menu answers "is anything waiting for me"
-    // before any keypress.
-    body: [T('Waiting for you: ', 'Bitegereje: ') + pendingVisible().length],
     opts: [
-      { k: '1', label: T('Pending approvals', 'Ibyemezwa'), go: (a) => a.go('ld_appr') },
-      { k: '2', label: T('Outstanding loans', 'Inguzanyo ziriho'), go: (a) => { a.set({ page: 0 }); a.go('tr_loans') } },
-      { k: '3', label: T('Group report', 'Raporo y’itsinda'), go: (a) => a.go('ld_report') },
-      { k: '4', label: T('Members', 'Abanyamuryango'), go: (a) => a.go('tr_mem') },
-      { k: '5', label: T('Change contribution', 'Guhindura umusanzu'), go: (a) => a.go('ld_chg') },
+      { k: '1', label: T('Approvals (', 'Ibyemezwa (') + pendingVisible().length + ')', go: (a) => a.go('ld_appr') },
+      { k: '2', label: T('Group report', 'Raporo y’itsinda'), go: (a) => a.go('ld_report') },
+      { k: '3', label: T('Members', 'Abanyamuryango'), go: (a) => a.go('tr_mem') },
+      { k: '4', label: T('Change contribution', 'Guhindura umusanzu'), go: (a) => a.go('ld_chg') },
       // Exists because the treasurer gets sick and the meeting still happens.
-      { k: '6', label: T('Act as Treasurer', 'Kora nk’Umubitsi'), go: (a) => { a.set({ acting: true }); a.go('tr_main', false) } },
+      { k: '5', label: T('Act as Treasurer', 'Kora nk’Umubitsi'), go: (a) => { a.set({ acting: true }); a.go('tr_main', false) } },
     ],
     back: false,
   }
@@ -550,18 +646,21 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
     t === 'deposit' ? 'ld_dep' : t === 'loan' ? 'ld_loan' : 'ld_item'
 
   d.ld_appr = {
-    head: T('PENDING APPROVALS', 'IBYEMEZWA'),
+    head: T('APPROVALS', 'IBYEMEZWA') + pageTag(pv.length, 4),
     // The empty state carries the reason, not an apology.
     body: pv.length ? [] : [
       T('Nothing waiting for you.', 'Nta kintu kibitegereje.'),
-      T('Deposits you submitted yourself never appear here.', 'Ibyo wohereje ubwawe ntibigaragara hano.'),
+      T('What you sent yourself never appears here.', 'Ibyo wohereje ubwawe ntibigaragara hano.'),
     ],
-    opts: pv.map((p, i) => ({
-      k: String(i + 1),
-      label: pendingLabel(p),
-      go: (a: Actions) => { a.set({ ctx: { pid: p.id } }); a.go(pendingNode(p.type)) },
-    })),
-    foot: pv.length ? T('Amounts in RWF · 0 Back', 'Mu RWF · 0 Subira') : T('0 Back', '0 Subira inyuma'),
+    opts: [
+      ...page(pv, 4).map((p, i) => ({
+        k: String(i + 1),
+        label: pendingLabel(p),
+        go: (a: Actions) => { a.set({ ctx: { pid: p.id } }); a.go(pendingNode(p.type)) },
+      })),
+      ...pager(pv.length, 4),
+    ],
+    foot: pv.length ? T('RWF · 0 Back', 'RWF · 0 Subira') : T('0 Back', '0 Subira inyuma'),
   }
 
   const item = S.pending.find((p) => p.id === S.ctx.pid)
@@ -569,12 +668,12 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
   d.ld_dep = {
     head: T('DEPOSIT · 04 Aug', 'UBWIZIGAME · 04 Kanama'),
     body: [
-      T('Submitted by ', 'Yoherejwe na ') + (item?.by ? P[item.by].name : ''),
+      T('From ', 'Yoherejwe na ') + (item?.by ? P[item.by].name.split(' ')[0] : ''),
       // Approving a single net figure is not approving; the expense line is
       // the part that gets disputed.
-      T('Collected: ', 'Byakusanyijwe: ') + F(item?.collected ?? 0),
-      T('Expenses:  ', 'Ibiguzi:  ') + F(item?.exp ?? 0),
-      T('NET: ', 'IGITERANYO: ') + F(item?.net ?? 0) + ' RWF',
+      T('Collected ', 'Byakusanyijwe ') + F(item?.collected ?? 0),
+      T('Expenses ', 'Ibiguzi ') + F(item?.exp ?? 0),
+      T('NET ', 'IGITERANYO ') + F(item?.net ?? 0) + ' RWF',
     ],
     opts: [
       {
@@ -597,7 +696,6 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
       },
       { k: '2', label: T('Reject', 'Anga'), go: (a) => a.go('ld_dep_no') },
     ],
-    foot: T('Amounts in RWF · 0 Back', 'Mu RWF · 0 Subira'),
   }
 
   d.ld_dep_ok = {
@@ -639,12 +737,12 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
   d.ld_loan = {
     head: T('LOAN REQUEST', 'GUSABA INGUZANYO'),
     body: [
-      name(item?.mid) + ' · ' + F(item?.amt ?? 0) + ' RWF @ ' + (item?.rate ?? 5) + '%',
-      // Savings and existing exposure on the same screen as the amount — that
-      // is the whole credit assessment an ikimina performs.
-      T('Savings: ', 'Ubwizigame: ') + F(MEM[String(item?.mid)]?.sav ?? 0),
-      T('Existing loan: ', 'Umwenda asanzwe: ') + F(MEM[String(item?.mid)]?.loan ?? 0),
-      T('Requested by ', 'Byasabwe na ') + (item?.by ? P[item.by].name.split(' ')[0] : ''),
+      name(item?.mid) + ' · ' + F(item?.amt ?? 0) + ' @ ' + (item?.rate ?? 5) + '%',
+      // Savings and existing exposure on the same line as the amount — that is
+      // the whole credit assessment an ikimina performs.
+      T('Saved ', 'Yizigamiye ') + F(MEM[String(item?.mid)]?.sav ?? 0)
+        + T(' · owes ', ' · afite ') + F(MEM[String(item?.mid)]?.loan ?? 0),
+      T('From ', 'Byasabwe na ') + (item?.by ? P[item.by].name.split(' ')[0] : ''),
     ],
     opts: [
       {
@@ -743,18 +841,20 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
     end: true,
   }
 
-  // Five figures, no drill-down. This is what a leader reads aloud when a
-  // member asks how the group is doing.
+  // What a leader reads aloud when a member asks how the group is doing, with
+  // the two lists that back it up one keypress away.
   d.ld_report = {
     head: T('GROUP REPORT · Aug', 'RAPORO · Kanama'),
     body: [
-      T('Savings total: ', 'Ubwizigame bwose: ') + F(S.groupTotal),
-      T('Loans out:     ', 'Inguzanyo: ') + F(IDS.reduce((a, i) => a + MEM[i].loan, 0)),
-      T('Members:       ', 'Abanyamuryango: ') + nMem,
-      T('Contribution:  ', 'Umusanzu: ') + F(S.contribution),
-      T('Cycle ends 20 Dec', 'Igihembwe kirangira 20/12'),
+      T('Savings: ', 'Ubwizigame: ') + F(S.groupTotal),
+      T('Loans out: ', 'Inguzanyo: ') + F(IDS.reduce((a, i) => a + MEM[i].loan, 0)),
+      T('Fines owed: ', 'Amande: ') + F(finesTotal(S.fines)),
+      T('Members ', 'Abantu ') + nMem + T(' · share ', ' · umusanzu ') + F(S.contribution),
     ],
-    foot: T('Amounts in RWF · 0 Back', 'Mu RWF · 0 Subira'),
+    opts: [
+      { k: '1', label: T('Who owes what', 'Abafite umwenda'), go: (a) => { a.set({ page: 0 }); a.go('tr_loans') } },
+      { k: '2', label: T('Fines owed', 'Amande atarishyuwe'), go: (a) => { a.set({ page: 0 }); a.go('tr_fines') } },
+    ],
   }
 
   d.ld_chg = {
@@ -802,14 +902,17 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
     // Name and group on screen one: the first question a member has about a
     // system holding her money is whether it knows who she is.
     head: 'GANZA · ' + P.member.name.split(' ')[0],
-    body: [GROUP_NAME + ' · ' + T('member ', 'umunyamuryango ') + meMid],
+    body: [GROUP_NAME + ' · ' + meMid],
+    // The same four things the app puts on her home screen, in the same order:
+    // savings, loan, fines, history.
     opts: [
       { k: '1', label: T('My savings', 'Ubwizigame bwanjye'), go: (a) => { a.set({ ctx: { after: 'mb_sav' } }); a.go(S.pinOk ? 'mb_sav' : 'mb_pin') } },
       { k: '2', label: T('My loan', 'Inguzanyo yanjye'), go: (a) => { a.set({ ctx: { after: 'mb_loan' } }); a.go(S.pinOk ? 'mb_loan' : 'mb_pin') } },
+      { k: '3', label: T('My fines', 'Amande yanjye'), go: (a) => { a.set({ ctx: { after: 'mb_fines' } }); a.go(S.pinOk ? 'mb_fines' : 'mb_pin') } },
       // History and problem reports never trigger the gate — they leak nothing,
       // and a forgotten PIN is itself a problem to report.
-      { k: '3', label: T('Transaction history', 'Ibyakozwe'), go: (a) => a.go('mb_hist') },
-      { k: '4', label: T('Report a problem', 'Gutanga ikibazo'), go: (a) => a.go('mb_prob') },
+      { k: '4', label: T('My history', 'Ibyakozwe'), go: (a) => a.go('mb_hist') },
+      { k: '5', label: T('Report a problem', 'Gutanga ikibazo'), go: (a) => a.go('mb_prob') },
     ],
     back: false,
   }
@@ -864,22 +967,40 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
     foot: T('0 Back · 00 Main', '0 Subira · 00 Menu'),
   }
 
+  // The app's fines page, on a feature phone: each fine, the meeting it was
+  // raised at, and the total — the three things she needs before she argues
+  // about it at the table.
+  const myFines = finesOf(meMid)
+  d.mb_fines = {
+    head: T('MY FINES', 'AMANDE YANJYE') + pageTag(myFines.length, 3),
+    body: myFines.length
+      ? [
+          ...page(myFines, 3).map((f) => f.on + '  ' + fineWhy(f.why) + '  ' + F(f.amt)),
+          T('Total ', 'Byose ') + F(finesTotal(myFines)) + ' RWF',
+          T('Pay at the meeting.', 'Wishyura mu nama.'),
+        ]
+      : [T('You owe no fines.', 'Nta mande ufite.')],
+    opts: pager(myFines.length, 3),
+    foot: T('0 Back · 00 Main', '0 Subira · 00 Menu'),
+  }
+
   // Fixed-width columns so the amounts align on a 26-character screen and can
-  // be scanned rather than read.
+  // be scanned rather than read. Three rows a page, because the fourth would
+  // push the screen past the seven lines the handset shows without scrolling.
+  const hist = [
+    '28/07  +10,000  ' + T('contrib.', 'umusanzu'),
+    '21/07  +10,000  ' + T('contrib.', 'umusanzu'),
+    '14/07  +10,000  ' + T('contrib.', 'umusanzu'),
+    // A combined entry, with both causes named — never silently merged.
+    '07/07  +12,000  ' + T('+fine', '+amande'),
+    '30/06  +10,000  ' + T('contrib.', 'umusanzu'),
+  ]
+
   d.mb_hist = {
-    head: T('HISTORY · last 5', 'IBYAKOZWE BIHERUKA'),
-    // Abbreviated because five rows of "contribution" push the screen past the
-    // 182 bytes a carrier will send, and a truncated history is worse than a
-    // short word.
-    body: [
-      '28/07  +10,000  ' + T('contrib.', 'umusanzu'),
-      '21/07  +10,000  ' + T('contrib.', 'umusanzu'),
-      '14/07  +10,000  ' + T('contrib.', 'umusanzu'),
-      // A combined entry, with both causes named — never silently merged.
-      '07/07  +12,000  ' + T('contrib.+fine', 'umusanzu+amande'),
-      '30/06  +10,000  ' + T('contrib.', 'umusanzu'),
-    ],
-    foot: T('RWF · 99 More · 0 Back', 'RWF · 99 Ibindi · 0 Subira'),
+    head: T('MY HISTORY', 'IBYAKOZWE') + pageTag(hist.length, 3),
+    body: page(hist, 3),
+    opts: pager(hist.length, 3),
+    foot: T('RWF · 0 Back', 'RWF · 0 Subira'),
   }
 
   d.mb_prob = {
@@ -986,15 +1107,15 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
     end: true,
   }
 
-  // Three sentences and a phone number: the whole product in the order it
+  // Three short lines and a phone number: the whole product in the order it
   // happens, ending with a human.
   d.gs_help = {
     head: T('HOW GANZA WORKS', 'UKO GANZA IKORA'),
     body: [
-      T('1. The treasurer records each contribution at the meeting.', '1. Umubitsi yandika buri musanzu mu nama.'),
-      T('2. Everyone gets an SMS receipt.', '2. Buri wese abona SMS.'),
-      T('3. A leader approves the day’s deposit.', '3. Umuyobozi yemeza ubwizigame.'),
-      T('Support: ', 'Ubufasha: ') + SUPPORT,
+      T('1 Treasurer records it.', '1 Umubitsi arandika.'),
+      T('2 Everyone gets an SMS.', '2 Buri wese abona SMS.'),
+      T('3 A leader approves.', '3 Umuyobozi yemeza.'),
+      T('Help ', 'Ubufasha ') + SUPPORT,
     ],
     end: true,
   }
