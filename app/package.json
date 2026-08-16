@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "postbuild": "cp dist/index.html dist/404.html",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "deploy:root": "BASE_PATH=/GANZA/ npm run build && cd .. && rm -rf assets icons index.html 404.html manifest.webmanifest sw.js workbox-*.js registerSW.js favicon.svg && cp -r app/dist/. . && touch .nojekyll"
   },
   "dependencies": {
     "react": "^19.2.0",

@@ -189,7 +189,14 @@ npm install
 npm run dev       # local development
 npm test          # the ikimina's arithmetic and voting thresholds
 npm run build     # production build into app/dist
+npm run deploy:root  # rebuild the copy served from the repository root
 ```
+
+The copy at the repository root exists because GitHub Pages can be served either from the workflow
+or from a branch, and which one a repository uses is a setting this repository cannot read. It must
+be built with `BASE_PATH=/GANZA/` — the site lives at a sub-path, so a build made with the default
+base asks for `/assets/…` and gets a blank page. `npm run deploy:root` is that build; CI runs the
+same thing on every push to `main`.
 
 React 19 + TypeScript + Vite, installable as a PWA. No UI framework: the design specifies exact
 values for every margin, radius and weight, so those values are written directly rather than
