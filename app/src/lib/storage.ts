@@ -5,6 +5,9 @@ const KEY = 'ganza.state.v1'
 
 /** Session-only fields. A reload should not drop you back mid-PIN or mid-form. */
 const TRANSIENT: (keyof AppState)[] = [
+  // A refresh returns you to the main screen rather than halfway through a
+  // form you have forgotten you opened.
+  'page',
   'busy', 'busyKey', 'pin', 'toast', 'confirm', 'confirmId', 'capture', 'receiptView',
   'groupPickerOn', 'sheetId', 'sheetStep', 'otherAmt', 'ikEdit', 'ikEditVal', 'ikEditKey',
   'expFormOn', 'ruleFormOn', 'voiceRec', 'helpRec', 'fineOpen', 'pastExp',

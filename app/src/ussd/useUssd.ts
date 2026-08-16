@@ -26,6 +26,7 @@ function fresh(persona: PersonaKey, lang: Lang): UssdState {
     ctx: {},
     page: 0,
     sms: null,
+    smsLog: [],
     members: structuredClone(MEM),
     pending: [
       { id: 'd1', type: 'deposit', by: 'treasurer', collected: 80000, exp: 5000, net: 75000 },
@@ -92,8 +93,9 @@ export function useUssd(latency = 2) {
   const sms = useCallback((text: string) => {
     window.clearTimeout(smsTimer.current)
     const time = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
-    setSt((s) => ({ ...s, sms: { text, time, id: 'sms' + Date.now() } }))
-    smsTimer.current = window.setTimeout(() => setSt((s) => ({ ...s, sms: null })), 8000)
+    const entry = { text, time, id: 'sms' + Date.now() }
+    setSt((s) => ({ ...s, sms: entry, smsLog: [entry, ...s.smsLog].slice(0, 6) }))
+    smsTimer.current = window.setTimeout(() => setSt((s) => ({ ...s, sms: null })), 5000)
   }, [])
 
   const endSession = useCallback((reason: string) => {

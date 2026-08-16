@@ -101,7 +101,7 @@ export function ContributionSheet() {
     set({
       mstate: { ...st.mstate, [sm.id]: { st: 'absent', amt: 0 } },
       sheetId: null, sheetStep: 'main',
-      fines: [...st.fines, { id: sm.id, amt: ABSENCE_FINE, why: 'fineAbsence' }],
+      fines: [...st.fines, { id: sm.id, amt: ABSENCE_FINE, why: 'fineAbsence', on: 'Today' }],
     })
   }
 

@@ -83,6 +83,8 @@ export interface Fine {
   amt: number
   /** A string key: `fineLate` or `fineAbsence`. */
   why: 'fineLate' | 'fineAbsence' | 'fineRepay'
+  /** The meeting it was raised at. Shown wherever the fine is shown. */
+  on: string
 }
 
 export interface PastMeeting {
