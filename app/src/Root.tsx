@@ -36,16 +36,39 @@ export default function Root() {
   return <AppView />
 }
 
+// The deck as submitted, not a copy of it. It lives in `app/public/` so it is
+// part of every build — the same file whether the site is served from the
+// workflow or from the repository root. `import.meta.env.BASE_URL` is what makes
+// it resolve under the /GANZA/ sub-path.
+const DECK = import.meta.env.BASE_URL + encodeURIComponent('Ganza Pitch Two Pager.pdf')
+
 function DeckView() {
   return (
     <Workbench
       view="deck"
       panel={
-        <iframe
-          src="Ganza Two Pager -source-.html"
-          title="Ganza pitch deck"
-          style={{ width: '100%', height: '100%', border: 0, display: 'block', background: '#fff' }}
-        />
+        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+          <iframe
+            src={DECK}
+            title="Ganza Pitch Two Pager"
+            style={{ width: '100%', height: '100%', border: 0, display: 'block', background: '#fff' }}
+          />
+          {/* Phone browsers render a PDF in a frame badly or not at all, so the
+              file itself is always one tap away. */}
+          <a
+            href={DECK}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              position: 'absolute', right: 16, bottom: 16, background: 'var(--card)',
+              border: '1px solid var(--line)', borderRadius: 999, padding: '9px 15px',
+              fontSize: 13, fontWeight: 600, color: 'var(--ink)', textDecoration: 'none',
+              boxShadow: '0 6px 20px rgba(28,28,42,.14)',
+            }}
+          >
+            Open the PDF
+          </a>
+        </div>
       }
     />
   )
