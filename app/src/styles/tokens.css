@@ -130,6 +130,22 @@ textarea {
     transform: none;
   }
 }
+/* An arriving message comes down from the top of the handset, the way a
+   notification does, and settles with a small overshoot. */
+@keyframes drop {
+  0% {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
 @keyframes pulse {
   0%,
   100% {

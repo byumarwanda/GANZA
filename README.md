@@ -121,8 +121,15 @@ Every screen in `00-CORE.md`, `01-TREASURER.md`, `02-PRESIDENT-SECRETARY.md`, `0
   open, no payment above the balance, no removal with an open loan, one contribution per member per
   meeting.
 - **Nothing scrolls, and nothing is padded.** Every screen fits the seven lines a handset shows at
-  once; a list that cannot — members, loans, fines, history — shows what fits and offers `99 Next`.
-  Two tests hold the line, in both languages.
+  once; a list that cannot — members, loans, fines, history — shows what fits and offers `99 Next`,
+  then nothing once you reach the end. Two tests hold the line, in both languages.
+- **Nobody has to remember a member id.** Every screen that asks for one shows the roster beside the
+  prompt, four names at a time: the id can still be typed straight in, which is the fast way once
+  you know it. Each list is narrowed to who the screen is for — the roll-call drops each member as
+  they pay, a loan offers only those without one open, a payment offers only those who owe.
+- **A dropped session has a screen of its own.** Carriers fail; a screen that says so and puts you
+  back exactly where you were is the difference between trusting the system and going back to the
+  notebook. Try it with "Drop the connection" beside the phone.
 - **Running totals are asked for, not pushed.** The collection path carries the member, the amount
   and the way onward, and nothing else: `id → 1 → 1` a member. The day's figures live on **Today's
   summary** and on the deposit screen, where money is actually about to move.

@@ -31,24 +31,43 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
   const withLoans = IDS.filter((i) => MEM[i].loan > 0)
   const page = <X,>(rows: X[], per: number) => rows.slice(S.page * per, S.page * per + per)
 
-  /** A list never scrolls. It shows the rows that fit and offers the rest
-      behind Next — the handset's own behaviour, and the only one that works
-      when the screen is eight lines tall. */
-  const pager = (total: number, per: number): UssdOption[] => {
-    const last = Math.max(0, Math.ceil(total / per) - 1)
-    const out: UssdOption[] = []
-    if (S.page < last) {
-      out.push({ k: '99', label: T('Next', 'Ibikurikira'), go: (a) => a.set({ page: a.state.page + 1, reply: '' }) })
-    }
-    if (S.page > 0) {
-      out.push({ k: '98', label: T('Previous', 'Ibibanza'), go: (a) => a.set({ page: Math.max(0, a.state.page - 1), reply: '' }) })
-    }
-    return out
-  }
+  /** A list never scrolls. It shows the rows that fit and puts the rest behind
+      one key — Next while there are more, nothing once you are at the end, and
+      0 to leave. That is all a carrier's own menus offer, and one key is all
+      there is room for. */
+  const pager = (total: number, per: number): UssdOption[] =>
+    (S.page + 1) * per < total
+      ? [{ k: '99', label: T('Next', 'Ibikurikira'), go: (a) => a.set({ page: a.state.page + 1, reply: '' }) }]
+      : []
 
   const pageTag = (total: number, per: number) => {
     const pages = Math.max(1, Math.ceil(total / per))
     return pages > 1 ? ' ' + (S.page + 1) + '/' + pages : ''
+  }
+
+  /** An id prompt that carries its own roster.
+   *
+   *  Everywhere a member id is asked for, the names are on the screen with it:
+   *  the id can still be typed straight in — that is the fast way once you know
+   *  it — but nobody has to remember one. Four names fit beside a header, a
+   *  prompt and a footer; 99 and 98 page through the rest, handled here because
+   *  an input node never sees the option keys.
+   */
+  const roster = (ids: string[], empty: string) => {
+    const more = (S.page + 1) * 4 < ids.length
+
+    return {
+      tag: pageTag(ids.length, 4),
+      body: ids.length ? page(ids, 4).map((i) => i + ' ' + MEM[i].n) : [empty],
+      foot: (more ? T('99 Next · ', '99 Ibikurikira · ') : '') + T('0 Back', '0 Subira'),
+      /** True when the keypress was navigation rather than an id, so the caller
+          stops. `0` leaves, as it does everywhere else in the grammar. */
+      paged(v: string, a: Actions) {
+        if (more && v === '99') { a.set({ page: a.state.page + 1, reply: '' }); return true }
+        if (v === '0') { a.back(); return true }
+        return false
+      },
+    }
   }
 
   const fineWhy = (w: FineWhy) =>
@@ -113,17 +132,24 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
     back: false,
   }
 
-  // The hot path. Nothing on these three screens but the member, the amount and
-  // the way onward: id, 1, 1, id, 1, 1 — two keypresses a member once the id is
-  // typed. Totals and counts are deliberately absent; they are on "Today".
+  // The hot path. The roster is on the screen, so nobody has to remember an id
+  // — and it shrinks as the roll-call goes, which is the running count made
+  // useful instead of merely displayed. Four names fit; the rest are behind 99.
+  const unpaid = roster(
+    IDS.filter((i) => !S.coll.some((c) => c.id === i)),
+    T('Everyone has paid.', 'Bose bishyuye.'),
+  )
+
   d.tr_coll_id = {
-    head: T('COLLECT', 'KWAKIRA'),
+    head: T('COLLECT', 'KWAKIRA') + unpaid.tag,
+    body: unpaid.body,
     input: {
       // `0` finishes rather than going back. This is the one documented
       // exception to the navigation grammar, and the prompt states it.
-      prompt: T('Member ID (0 = done):', 'ID (0 = kurangiza):'),
+      prompt: T('Member ID (0 = done):', 'Injiza ID (0 = kurangiza):'),
       on(v, a) {
         if (v === '0') return a.go('tr_coll_sum', false)
+        if (unpaid.paged(v, a)) return
         const id = v.padStart(2, '0')
         if (!MEM[id]) return T('No member with that ID.', 'Nta munyamuryango ufite iyo ID.')
         if (S.coll.some((c) => c.id === id)) {
@@ -133,6 +159,7 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
         a.go('tr_coll_amt')
       },
     },
+    foot: unpaid.foot,
   }
 
   d.tr_coll_amt = {
@@ -194,24 +221,29 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
   d.tr_extra = {
     head: T('FINES AND EXPENSES', 'AMANDE N’IBIGUZI'),
     opts: [
-      { k: '1', label: T('Record a fine', 'Kwandika amande'), go: (a) => a.go('tr_fine_id') },
+      { k: '1', label: T('Record a fine', 'Kwandika amande'), go: (a) => { a.set({ page: 0 }); a.go('tr_fine_id') } },
       { k: '2', label: T('Record an expense', 'Kwandika ikiguzi'), go: (a) => a.go('tr_exp_amt') },
       { k: '3', label: T('Fines owed', 'Amande atarishyuwe'), go: (a) => { a.set({ page: 0 }); a.go('tr_fines') } },
     ],
     foot: T('0 Back', '0 Subira inyuma'),
   }
 
+  const anyone = roster(IDS, T('No members yet.', 'Nta banyamuryango.'))
+
   d.tr_fine_id = {
-    head: T('FINE · member ID', 'AMANDE · ID'),
+    head: T('FINE · who?', 'AMANDE · nde?') + anyone.tag,
+    body: anyone.body,
     input: {
-      prompt: T('Member ID:', 'ID y’umunyamuryango:'),
+      prompt: T('Member ID:', 'Injiza ID:'),
       on(v, a) {
+        if (anyone.paged(v, a)) return
         const id = v.padStart(2, '0')
         if (!MEM[id]) return T('No member with that ID.', 'Nta munyamuryango ufite iyo ID.')
         a.set({ ctx: { id } })
         a.go('tr_fine_why')
       },
     },
+    foot: anyone.foot,
   }
 
   /** Raise a fine against whoever is in context, then land on the receipt. */
@@ -350,18 +382,28 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
   d.tr_loan_menu = {
     head: T('LOANS', 'INGUZANYO'),
     opts: [
-      { k: '1', label: T('Give a loan', 'Gutanga inguzanyo'), go: (a) => a.go('tr_loan_id') },
-      { k: '2', label: T('Receive a payment', 'Kwakira ubwishyu'), go: (a) => a.go('tr_pay_id') },
+      { k: '1', label: T('Give a loan', 'Gutanga inguzanyo'), go: (a) => { a.set({ page: 0 }); a.go('tr_loan_id') } },
+      { k: '2', label: T('Receive a payment', 'Kwakira ubwishyu'), go: (a) => { a.set({ page: 0 }); a.go('tr_pay_id') } },
       { k: '3', label: T('Who owes what', 'Abafite umwenda'), go: (a) => { a.set({ page: 0 }); a.go('tr_loans') } },
     ],
     foot: T('0 Back', '0 Subira inyuma'),
   }
 
+  // Anyone already carrying a loan is refused a second one, so they are not on
+  // the list — the screen offers what can actually be done.
+  const canBorrow = roster(
+    IDS.filter((i) => MEM[i].loan === 0),
+    T('Everyone has a loan out.', 'Bose bafite inguzanyo.'),
+  )
+
   d.tr_loan_id = {
-    head: T('GIVE LOAN · member ID', 'INGUZANYO · ID'),
+    head: T('GIVE LOAN · who?', 'INGUZANYO · nde?') + canBorrow.tag,
+    body: canBorrow.body,
+    foot: canBorrow.foot,
     input: {
-      prompt: T('Member ID:', 'ID y’umunyamuryango:'),
+      prompt: T('Member ID:', 'Injiza ID:'),
       on(v, a) {
+        if (canBorrow.paged(v, a)) return
         const id = v.padStart(2, '0')
         if (!MEM[id]) return T('No member with that ID.', 'Nta munyamuryango ufite iyo ID.')
         if (MEM[id].loan > 0) return name(id) + T(' still owes ', ' aracyafite umwenda ') + F(MEM[id].loan) + ' RWF.'
@@ -442,14 +484,18 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
     end: true,
   }
 
+  // Who owes, and how much, on the screen where the payment is taken — it
+  // removes the commonest dead end, typing an id that has nothing to pay.
+  const owing = roster(withLoans, T('Nobody owes anything.', 'Nta wufite umwenda.'))
+
   d.tr_pay_id = {
-    head: T('LOAN PAYMENT · ID', 'UBWISHYU · ID'),
-    // Listing the eligible ids removes the commonest dead end: typing an id
-    // that has nothing to pay.
-    body: [T('With active loans: ', 'Bafite inguzanyo: ') + (withLoans.join(', ') || T('none', 'nta n’umwe'))],
+    head: T('PAYMENT · who?', 'UBWISHYU · nde?') + owing.tag,
+    body: owing.body,
+    foot: owing.foot,
     input: {
-      prompt: T('Member ID:', 'ID y’umunyamuryango:'),
+      prompt: T('Member ID:', 'Injiza ID:'),
       on(v, a) {
+        if (owing.paged(v, a)) return
         const id = v.padStart(2, '0')
         if (!MEM[id]) return T('No member with that ID.', 'Nta munyamuryango ufite iyo ID.')
         if (!MEM[id].loan) return name(id) + T(' has no active loan.', ' nta nguzanyo afite.')
@@ -510,7 +556,7 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
     head: T('MEMBERS ', 'ABANYAMURYANGO ') + '(' + nMem + ')',
     opts: [
       { k: '1', label: T('Register a member', 'Kwandika umuntu'), go: (a) => a.go('mem_reg_name') },
-      { k: '2', label: T('Remove a member', 'Kuvana umuntu'), go: (a) => a.go('mem_rm_id') },
+      { k: '2', label: T('Remove a member', 'Kuvana umuntu'), go: (a) => { a.set({ page: 0 }); a.go('mem_rm_id') } },
       { k: '3', label: T('Member list', 'Urutonde'), go: (a) => { a.set({ page: 0 }); a.go('mem_list') } },
     ],
     foot: T('0 Back', '0 Subira inyuma'),
@@ -556,10 +602,13 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
   }
 
   d.mem_rm_id = {
-    head: T('REMOVE MEMBER', 'KUVANA UMUNTU'),
+    head: T('REMOVE · who?', 'KUVANA · nde?') + anyone.tag,
+    body: anyone.body,
+    foot: anyone.foot,
     input: {
-      prompt: T('Member ID:', 'ID y’umunyamuryango:'),
+      prompt: T('Member ID:', 'Injiza ID:'),
       on(v, a) {
+        if (anyone.paged(v, a)) return
         const id = v.padStart(2, '0')
         if (!MEM[id]) return T('No member with that ID.', 'Nta munyamuryango ufite iyo ID.')
         // An open loan blocks removal outright.
@@ -1022,6 +1071,32 @@ export function defs(S: UssdState, who: () => 'treasurer' | 'president' | 'secre
         'Vedaste (Perezida) na Yvette (Umunyamabanga) babibonye. Bazasubiza mu nama yo ku 04 Kanama.'),
     ],
     end: true,
+  }
+
+  // ---------------------------------------------------------------- system
+
+  /** When the request does not come back.
+   *
+   *  A carrier gives you "Connection problem or invalid MMI code" and drops you,
+   *  which on a money screen is the difference between a treasurer trusting the
+   *  system and going back to the notebook. This is a screen of its own, it says
+   *  plainly that nothing was lost, and it puts you back exactly where you were.
+   */
+  d.sys_err = {
+    head: T('NO ANSWER', 'NTA GISUBIZO'),
+    body: [
+      T('The network dropped this request.', 'Umuyoboro wahagaritse.'),
+      T('Nothing was lost.', 'Nta kintu cyabuze.'),
+    ],
+    opts: [
+      {
+        k: '1',
+        label: T('Try again', 'Ongera ugerageze'),
+        go: (a) => (S.retry ? a.go(S.retry, false) : a.home()),
+      },
+      { k: '2', label: T('Main menu', 'Menu nyamukuru'), go: (a) => a.home() },
+    ],
+    back: false,
   }
 
   // ---------------------------------------------------------------- guest

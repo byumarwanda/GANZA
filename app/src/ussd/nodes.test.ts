@@ -17,7 +17,7 @@ function state(over: Partial<UssdState> = {}): UssdState {
       { id: 'd1', type: 'deposit', by: 'treasurer', collected: 80000, exp: 5000, net: 75000 },
       { id: 'l1', type: 'loan', by: 'treasurer', mid: '03', amt: 150000, rate: 5 },
     ],
-    groupTotal: GROUP_TOTAL, contribution: STD, pinTries: 0, ended: '',
+    groupTotal: GROUP_TOTAL, contribution: STD, pinTries: 0, ended: '', retry: null,
     ...over,
   }
 }
@@ -212,7 +212,15 @@ describe('money invariants', () => {
 
   it('resolves a one-digit id to two digits, so 3 and 03 both work', () => {
     expect(run('tr_coll_id', '3')).toBeUndefined()
-    expect(run('tr_coll_id', '99')).toContain('No member')
+    expect(run('tr_coll_id', '77')).toContain('No member')
+  })
+
+  // The id prompts carry the roster, so they have to page through it
+  // themselves — an input node never sees the option keys.
+  it('reads 99 as Next on an id prompt, not as a member id', () => {
+    for (const id of ['tr_coll_id', 'tr_fine_id', 'tr_loan_id', 'mem_rm_id']) {
+      expect(run(id, '99'), `${id} took 99 for an id`).toBeUndefined()
+    }
   })
 })
 

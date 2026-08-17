@@ -17,7 +17,8 @@
   background: var(--bg);
 }
 
-/* Standalone (installed to a home screen) there is no frame around it. */
+/* Standalone (installed to a home screen) there is no frame around it — the
+   real status bar is back, and it wants its own measurement, not ours. */
 @media (display-mode: standalone) {
   .phone {
     height: 100dvh;
