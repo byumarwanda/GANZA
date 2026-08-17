@@ -37,6 +37,7 @@ function fresh(persona: PersonaKey, lang: Lang): UssdState {
     contribution: STD,
     pinTries: 0,
     ended: '',
+    retry: null,
   }
 }
 
@@ -123,6 +124,13 @@ export function useUssd(latency = 2) {
     )
     go('tr_coll_ok', false)
   }, [go, sms])
+
+  /** A dropped request. The screen it happened on is kept, so the error page
+      can offer to carry on rather than send someone back to the main menu. */
+  const fail = useCallback(() => {
+    window.clearTimeout(timer.current)
+    setSt((s) => ({ ...s, loading: false, err: '', reply: '', retry: s.node, node: 'sys_err' }))
+  }, [])
 
   const actions: Actions = useMemo(() => ({
     get state() { return stRef.current },
@@ -220,7 +228,7 @@ export function useUssd(latency = 2) {
 
   return {
     st, node, actions,
-    dial, hangUp, type, del, send, setPersona, setLang, reset,
+    dial, hangUp, type, del, send, setPersona, setLang, reset, fail,
     persona: P[st.persona],
     who: who(),
   }

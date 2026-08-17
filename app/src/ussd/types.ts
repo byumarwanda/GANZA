@@ -75,6 +75,9 @@ export interface UssdState {
   pinTries: number
   /** Set when the session was ended by the system rather than the caller. */
   ended: string
+  /** The screen a failed request was on, so "Try again" resumes rather than
+      restarts. Null when nothing has failed. */
+  retry: string | null
 }
 
 /** What a node handler can do. Kept as an interface so nodes stay declarative. */

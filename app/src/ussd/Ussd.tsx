@@ -130,8 +130,9 @@ export function UssdDevice({ u }: { u: ReturnType<typeof useUssd> }) {
           </button>
         </div>
 
-        {/* A brief flash on the handset; the text itself is in the panel. */}
-        {st.sms && <SmsFlash />}
+        {/* The receipt arrives on the handset, as a message, over whatever is
+            on the screen — the way it does in a meeting. */}
+        {st.sms && <SmsToast text={st.sms.text} time={st.sms.time} />}
       </div>
     </div>
   )
@@ -248,6 +249,21 @@ export function UssdPanel({ u }: { u: ReturnType<typeof useUssd> }) {
           <Note><strong style={{ color: 'var(--ink)' }}>Treasurer.</strong> 1 → 3 → 1 → 1 → 4 → 1. Two contributions, two SMS receipts.</Note>
           <Note><strong style={{ color: 'var(--ink)' }}>President.</strong> 1 → 1 → 1. Approves the treasurer's deposit.</Note>
           <Note><strong style={{ color: 'var(--ink)' }}>Member.</strong> 3 → PIN. Her fines, with dates and a total.</Note>
+        </Fold>
+
+        <Fold title="When the network drops">
+          <Note>USSD sessions fail — a lost signal, a busy carrier, a timeout. The screen says so, and puts you back where you were.</Note>
+          <button
+            onClick={u.fail}
+            disabled={!st.node}
+            style={{
+              height: 38, padding: '0 14px', borderRadius: 999, border: '1px solid var(--line)',
+              background: 'var(--card)', color: st.node ? 'var(--ink)' : 'var(--sub)',
+              fontSize: 13, fontWeight: 600, cursor: st.node ? 'pointer' : 'default',
+            }}
+          >
+            Drop the connection
+          </button>
         </Fold>
 
         <Fold title="Screen budget">
@@ -398,19 +414,38 @@ function DialogButton({ onClick, strong, children }: { onClick: () => void; stro
   )
 }
 
-function SmsFlash() {
+/** The message itself, on the handset, in the shape a phone gives an SMS. */
+function SmsToast({ text, time }: { text: string; time: string }) {
   return (
     <div
-      aria-hidden="true"
+      role="status"
       style={{
-        position: 'absolute', top: 14, left: '50%', transform: 'translateX(-50%)',
-        display: 'flex', alignItems: 'center', gap: 7, background: 'var(--ink)', color: 'var(--bg)',
-        borderRadius: 99, padding: '4px 11px', fontSize: 10, fontWeight: 600, letterSpacing: '.08em',
-        textTransform: 'uppercase', animation: 'rise .2s ease', zIndex: 8,
+        position: 'absolute', top: 36, left: 14, right: 14, zIndex: 20,
+        background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 14,
+        padding: '10px 12px 11px', boxShadow: '0 14px 30px rgba(28,28,42,.28)',
+        animation: 'drop .28s cubic-bezier(.2,.9,.3,1.2)',
       }}
     >
-      <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--acc)' }} />
-      SMS sent
+      <div
+        style={{
+          display: 'flex', alignItems: 'center', gap: 6, fontSize: 9.5, fontWeight: 700,
+          letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--sub)', marginBottom: 5,
+        }}
+      >
+        <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--acc)', flex: 'none' }} />
+        <span style={{ color: 'var(--ink)' }}>Ganza</span>
+        <span style={{ marginLeft: 'auto', fontVariantNumeric: 'tabular-nums' }}>{time}</span>
+      </div>
+      <div
+        style={{
+          fontSize: 11.5, lineHeight: 1.4, color: 'var(--ink)',
+          // Long receipts are cut on the handset too — the full text is in the
+          // Messages card beside the phone.
+          display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+        }}
+      >
+        {text}
+      </div>
     </div>
   )
 }

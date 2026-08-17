@@ -125,6 +125,9 @@ function UssdView() {
 
 const PHONE_W = 390
 const PHONE_H = 844
+/** iOS gives its status bar 44 points. The app gets what is left, which is what
+    it gets on a real handset too. */
+const STATUS_H = 44
 
 function AppView() {
   const scale = useFitScale(PHONE_W, PHONE_H)
@@ -140,9 +143,17 @@ function AppView() {
                 width: PHONE_W, height: PHONE_H, transform: `scale(${scale})`, transformOrigin: 'top left',
                 position: 'relative', overflow: 'hidden', borderRadius: 44, background: 'var(--bg)',
                 boxShadow: '0 24px 60px rgba(28,28,42,.22), 0 0 0 9px #22222e, 0 0 0 11px #43435a',
+                display: 'flex', flexDirection: 'column',
               }}
             >
-              <App />
+              {/* The band a phone's operating system fills with the clock and
+                  the battery. There is no operating system inside a drawn
+                  frame, so without it the greeting starts hard against the
+                  bezel and the screen reads as clipped. */}
+              <div style={{ height: STATUS_H, flex: 'none' }} />
+              <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+                <App />
+              </div>
             </div>
           </div>
         }

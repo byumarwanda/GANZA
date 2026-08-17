@@ -58,10 +58,12 @@ export default function Landing() {
             margin: '16px auto 0', maxWidth: 460, textWrap: 'balance',
           }}
         >
-          The ikimina notebook, on any phone.
+          The ikimina logbook, on any phone.
         </p>
-        <p style={{ fontSize: 16, color: 'var(--sub)', margin: '10px 0 0' }}>
-          We never hold your money.
+        {/* "We never hold your money" was read as a disclaimer. The deck's own
+            sentence says the same thing as a fact about what Ganza does. */}
+        <p style={{ fontSize: 16, color: 'var(--sub)', margin: '10px auto 0', maxWidth: 440, lineHeight: 1.5 }}>
+          Ganza writes down the meeting. The money stays where the group already keeps it.
         </p>
         <p
           style={{
@@ -114,8 +116,8 @@ export default function Landing() {
         ))}
       </div>
 
-      <footer style={{ fontSize: 13, color: 'var(--sub)', textAlign: 'center' }}>
-        Sample data. No real money moves.
+      <footer style={{ fontSize: 13, color: 'var(--sub)', textAlign: 'center', lineHeight: 1.6 }}>
+        A working demo. The names and amounts are made up, and nothing here is connected to a bank.
       </footer>
     </div>
   )
